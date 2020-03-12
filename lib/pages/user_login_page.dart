@@ -29,8 +29,8 @@ class UserLoginState extends State<UserLoginPage>
   @override
   void initState() {
     super.initState();
-    _logoController =
-        AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _logoController = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -110,22 +110,27 @@ class UserLoginState extends State<UserLoginPage>
                         children: <Widget>[
                           Container(
                               margin: EdgeInsets.only(bottom: 20),
-                              child:SlideTransition(
-                                  position: _logoSlidTween.animate(_logoController),
-                                  child:ScaleTransition(
-                                //设置动画的缩放中心
-                                alignment: Alignment.center,
-                                scale: _logoScalTween.animate(_logoController),
-                                child: Center(
-                                    child: Image.asset(
-                                  "assets/images/logo.png",
-                                  fit: BoxFit.fill,
-                                  width: 300,
-                                  height: 180,
-                                )),
-                              ))),
+                              child: SlideTransition(
+                                  position: _logoSlidTween.animate(
+                                      CurvedAnimation(
+                                          parent: _logoController,
+                                          curve: Curves.ease)),
+                                  child: ScaleTransition(
+                                    //设置动画的缩放中心
+                                    alignment: Alignment.center,
+                                    scale:
+                                        _logoScalTween.animate(_logoController),
+                                    child: Center(
+                                        child: Image.asset(
+                                      "assets/images/logo.png",
+                                      fit: BoxFit.fill,
+                                      width: 300,
+                                      height: 180,
+                                    )),
+                                  ))),
                           SlideTransition(
-                            position: _logoSlidTween.animate(_logoController),
+                            position: _logoSlidTween.animate(CurvedAnimation(
+                                parent: _logoController, curve: Curves.ease)),
                             child: Column(
                               key: _contentBody,
                               children: <Widget>[
