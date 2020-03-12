@@ -21,7 +21,8 @@ class UserLoginState extends State<UserLoginPage>
   GlobalKey _contentBody = GlobalKey();
 
   //动画控制器
-  var _logoAnimate = Tween(begin: 1.0, end: 0.7);
+  var _logoScalTween = Tween(begin: 1.0, end: 0.7);
+  var _logoSlidTween = Tween(begin: Offset.zero, end: Offset(0, 0));
 
   AnimationController _logoController;
 
@@ -29,7 +30,7 @@ class UserLoginState extends State<UserLoginPage>
   void initState() {
     super.initState();
     _logoController =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+        AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -42,17 +43,6 @@ class UserLoginState extends State<UserLoginPage>
 
   /// 软键盘弹出时候调用,[keyboardHeightInPx]键盘的高度
   void _onSoftKeyboardOpened(double keyboardHeightInPx) {
-    setState(() {
-      _logoAnimate = Tween(begin: 1.0, end: 0.7);
-      if (_logoController.isCompleted) {
-        _logoController.reset();
-        _logoController.forward();
-      } else {
-        //正向动画开始
-        _logoController.forward();
-      }
-    });
-
     //获取body在屏幕中的坐标，控件左上角
     RenderBox box = _contentBody.currentContext.findRenderObject();
     var offset = box.localToGlobal(Offset(0.0, box.size.height));
@@ -66,22 +56,26 @@ class UserLoginState extends State<UserLoginPage>
       //如果内容控件被键盘覆盖
       //需要移动的距离
       var offsetY = bodyBottom - keyboardTop;
-      Tween(begin: 1.0, end: 0.5).animate(_logoController);
-      _logoController.forward();
+      setState(() {
+        _logoScalTween = Tween(begin: 1.0, end: 0.7);
+        _logoSlidTween = Tween(
+            begin: Offset.zero, end: Offset(0, -offsetY / box.size.height));
+        if (_logoController.isCompleted) {
+          _logoController.reset();
+          _logoController.forward();
+        } else {
+          //正向动画开始
+          _logoController.forward();
+        }
+      });
     }
   }
 
   ///软键盘弹回时候调用
   void _onSoftKeyboardClosed() {
     setState(() {
-      _logoAnimate = Tween(begin: 0.7, end: 1);
-
       if (_logoController.isCompleted) {
-        _logoController.reset();
-        _logoController.forward();
-      } else {
-        //正向动画开始
-        _logoController.forward();
+        _logoController.reverse();
       }
     });
   }
@@ -109,74 +103,85 @@ class UserLoginState extends State<UserLoginPage>
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Scaffold(
+            resizeToAvoidBottomPadding: false,
             body: Builder(
                 builder: (context) => Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
                               margin: EdgeInsets.only(bottom: 20),
-                              child: ScaleTransition(
+                              child:SlideTransition(
+                                  position: _logoSlidTween.animate(_logoController),
+                                  child:ScaleTransition(
                                 //设置动画的缩放中心
                                 alignment: Alignment.center,
-                                scale: _logoAnimate.animate(_logoController),
+                                scale: _logoScalTween.animate(_logoController),
                                 child: Center(
-                                    child:
-                                        Image.asset("assets/images/logo.png")),
-                              )),
-                          Column(
-                            key: _contentBody,
-                            children: <Widget>[
-                              TextField(
-                                decoration: InputDecoration(
-                                    labelText: "账号",
-                                    prefixIcon: Icon(Icons.account_box),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.cyan),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    )),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 20),
-                                child: Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: <Widget>[
-                                    TextField(
-                                      decoration: InputDecoration(
-                                          labelText: "密码",
-                                          prefixIcon: Icon(Icons.lock),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.cyan),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                          )),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.visibility),
-                                      onPressed: () {
-                                        FocusScope.of(context)
-                                            .requestFocus(new FocusNode());
-                                        Util.showSnackBar(context, "fffff");
-                                      },
-                                    )
-                                  ],
+                                    child: Image.asset(
+                                  "assets/images/logo.png",
+                                  fit: BoxFit.fill,
+                                  width: 300,
+                                  height: 180,
+                                )),
+                              ))),
+                          SlideTransition(
+                            position: _logoSlidTween.animate(_logoController),
+                            child: Column(
+                              key: _contentBody,
+                              children: <Widget>[
+                                TextField(
+                                  decoration: InputDecoration(
+                                      labelText: "账号",
+                                      prefixIcon: Icon(Icons.account_box),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.cyan),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),
+                                      )),
                                 ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 20, right: 20),
-                                width: double.infinity,
-                                child: RaisedButton(
-                                  child: Text("登录"),
-                                  onPressed: () {},
+                                Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  child: Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: <Widget>[
+                                      TextField(
+                                        decoration: InputDecoration(
+                                            labelText: "密码",
+                                            prefixIcon: Icon(Icons.lock),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.cyan),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.grey),
+                                            )),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.visibility),
+                                        color: Colors.grey,
+                                        onPressed: () {
+                                          FocusScope.of(context)
+                                              .requestFocus(new FocusNode());
+                                          Util.showSnackBar(context, "fffff");
+                                        },
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              )
-                            ],
+                                Container(
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  width: double.infinity,
+                                  child: RaisedButton(
+                                    child: Text("登录"),
+                                    onPressed: () {},
+                                  ),
+                                )
+                              ],
+                            ),
                           )
                         ]))));
   }
