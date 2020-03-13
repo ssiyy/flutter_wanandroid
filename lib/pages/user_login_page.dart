@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wanandroid/util/util.dart';
 
@@ -15,16 +16,25 @@ class UserLoginState extends State<UserLoginPage>
   Size _screenSize;
 
   /// 缩放比例
-  double _scale = 0.7;
+  static final double _scale = 0.7;
 
   /// 账号，密码的包裹父布局的key
   GlobalKey _contentBody = GlobalKey();
 
-  //动画控制器
-  var _logoScalTween = Tween(begin: 1.0, end: 0.7);
+  ///logo的缩放动画
+  var _logoScalTween = Tween(begin: 1.0, end: _scale);
+
+  ///logo的平移动画
   var _logoSlidTween = Tween(begin: Offset.zero, end: Offset(0, 0));
 
+  ///动画控制器
   AnimationController _logoController;
+
+  ///用户账号
+  TextEditingController _accoutController = TextEditingController();
+
+  ///用户密码
+  TextEditingController _pwdController = TextEditingController();
 
   @override
   void initState() {
@@ -57,16 +67,12 @@ class UserLoginState extends State<UserLoginPage>
       //需要移动的距离
       var offsetY = bodyBottom - keyboardTop;
       setState(() {
-        _logoScalTween = Tween(begin: 1.0, end: 0.7);
         _logoSlidTween = Tween(
-            begin: Offset.zero, end: Offset(0, -offsetY / box.size.height));
-        if (_logoController.isCompleted) {
-          _logoController.reset();
-          _logoController.forward();
-        } else {
-          //正向动画开始
-          _logoController.forward();
-        }
+            //平移动画，用offsetY除以_contentBody得到需要平移自身尺寸的百分比
+            begin: Offset.zero,
+            end: Offset(0, -offsetY / box.size.height));
+        //正向动画开始
+        _logoController.forward();
       });
     }
   }
@@ -83,7 +89,7 @@ class UserLoginState extends State<UserLoginPage>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-
+    //用来监听键盘的相关事件
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keySoftHeight = MediaQuery.of(context).viewInsets.bottom;
       if (keySoftHeight > 0) {
@@ -96,10 +102,12 @@ class UserLoginState extends State<UserLoginPage>
 
   @override
   Widget build(BuildContext context) {
+    //获取屏幕的尺寸
     _screenSize = MediaQuery.of(context).size;
 
     return GestureDetector(
         onTap: () {
+          //点击除了Editext之外的地方隐藏软键盘
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Scaffold(
@@ -134,25 +142,43 @@ class UserLoginState extends State<UserLoginPage>
                             child: Column(
                               key: _contentBody,
                               children: <Widget>[
-                                TextField(
-                                  decoration: InputDecoration(
-                                      labelText: "账号",
-                                      prefixIcon: Icon(Icons.account_box),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.cyan),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey),
-                                      )),
-                                ),
                                 Container(
-                                  margin: EdgeInsets.only(top: 20),
+                                  margin: EdgeInsets.only(left: 20, right: 20),
                                   child: Stack(
                                     alignment: Alignment.centerRight,
                                     children: <Widget>[
                                       TextField(
+                                        controller: _accoutController,
+                                        decoration: InputDecoration(
+                                            labelText: "账号",
+                                            prefixIcon: Icon(Icons.account_box),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.cyan),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.grey),
+                                            )),
+                                      ),
+                                      IconButton(
+                                          icon: Icon(Icons.highlight_off),
+                                          color: Colors.grey,
+                                          onPressed: () {
+                                            //隐藏键盘
+                                            FocusScope.of(context)
+                                                .requestFocus(new FocusNode());
+                                          })
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: <Widget>[
+                                      TextField(
+                                        controller: _pwdController,
                                         decoration: InputDecoration(
                                             labelText: "密码",
                                             prefixIcon: Icon(Icons.lock),
@@ -171,7 +197,6 @@ class UserLoginState extends State<UserLoginPage>
                                         onPressed: () {
                                           FocusScope.of(context)
                                               .requestFocus(new FocusNode());
-                                          Util.showSnackBar(context, "fffff");
                                         },
                                       )
                                     ],
@@ -179,10 +204,38 @@ class UserLoginState extends State<UserLoginPage>
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(left: 20, right: 20),
+                                  height: 50,
                                   width: double.infinity,
                                   child: RaisedButton(
-                                    child: Text("登录"),
-                                    onPressed: () {},
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                        side: BorderSide(
+                                            color: Color.fromARGB(
+                                                225, 28, 90, 137))),
+                                    color: Color.fromARGB(225, 28, 90, 137),
+                                    child: Text(
+                                      "登录",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 22),
+                                    ),
+                                    onPressed: () {
+                                      print("${_accoutController.text}");
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 10, left: 20),
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: GestureDetector(
+                                        onTap: () {},
+                                        child: Text(
+                                          "没有账号，去注册",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14),
+                                        )),
                                   ),
                                 )
                               ],
