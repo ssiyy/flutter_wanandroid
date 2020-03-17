@@ -24,14 +24,27 @@ class HttpService {
       );
   }
 
-  Future<dynamic> get(String url, {Map<String, dynamic> params}) async {
-    var response = await _dio.get(url, queryParameters: params);
+  Future<T> get<T>(String url,
+      {Map<String, dynamic> params,
+        T fromJson(Map<String, dynamic> json)}) async {
+    if (fromJson == null) {
+      fromJson = (value) {
+        return value as T;
+      };
+    }
+
+ /*   var response = await _dio.get(url, queryParameters: params);
     if (response.statusCode == HttpStatus.ok) {
       var data = jsonDecode(response.toString());
-      print("url:$data");
-      return data;
+      print(data);
+      var reponse = Reponse.fromJson(data);
+      if (reponse.isSuccess) {
+        return fromJson(reponse.data);
+      } else {
+        throw reponse.errorMsg;
+      }
     } else {
       throw Exception("http reponse error");
-    }
+    }*/
   }
 }
