@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:wanandroid/data/base_bean.dart';
 
 class HttpService {
@@ -11,7 +12,13 @@ class HttpService {
         baseUrl: "https://www.wanandroid.com",
         connectTimeout: 30000,
         receiveTimeout: 30000,
-      );
+      )
+      ..interceptors.add(PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: true,
+          compact: false));
   }
 
   Dio _dio;

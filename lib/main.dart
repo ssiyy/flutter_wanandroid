@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wanandroid/pages/user_login_page.dart';
 
+import 'application.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: UserLoginPage(),
+      home: Application(),
     );
   }
 }
