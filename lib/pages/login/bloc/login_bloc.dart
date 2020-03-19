@@ -28,6 +28,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } catch (error) {
         yield LoginFailure(error: error.toString());
       }
+    } else if (event is ClearAccoutPressed) {
+      yield ClearAccout();
+    } else if (event is PasswordStatePressed) {
+      if (event.visiable) {
+        yield PasswordState.visiable();
+      } else {
+        yield PasswordState.invisiable();
+      }
     }
   }
 }

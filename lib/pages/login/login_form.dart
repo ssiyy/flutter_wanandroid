@@ -55,6 +55,8 @@ class LoginFormState extends State<LoginForm> {
                   backgroundColor: Colors.blue,
                 ),
               );
+            }else if(state is ClearAccout){
+              _accoutController.clear();
             }
           },
           child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
@@ -87,9 +89,9 @@ class LoginFormState extends State<LoginForm> {
                           icon: Icon(Icons.highlight_off),
                           color: Colors.grey,
                           onPressed: () {
-                            //隐藏键盘
-                            FocusScope.of(context)
-                                .requestFocus(new FocusNode());
+                            //点击清除账号
+                            BlocProvider.of<LoginBloc>(context)
+                                .add(ClearAccoutPressed());
                           })
                     ],
                   ),

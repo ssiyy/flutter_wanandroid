@@ -21,3 +21,28 @@ class LoginButtonPressed extends LoginEvent {
   String toString() =>
       'LoginButtonPressed { username: $username, password: $password }';
 }
+
+///表示ui界面变化 - 清除账号数据
+class ClearAccoutPressed extends LoginEvent {
+  @override
+  List<Object> get props => null;
+}
+
+///表示ui界面变化 - 显示隐藏密码
+@immutable
+class PasswordStatePressed extends LoginEvent {
+  final bool visiable;
+
+  PasswordStatePressed(this.visiable);
+
+  factory PasswordStatePressed.visiable() {
+    return PasswordStatePressed(true);
+  }
+
+  factory PasswordStatePressed.invisiable() {
+    return PasswordStatePressed(false);
+  }
+
+  @override
+  List<Object> get props => [visiable];
+}
