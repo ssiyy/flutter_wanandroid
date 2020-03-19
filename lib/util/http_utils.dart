@@ -9,7 +9,7 @@ class HttpService {
   HttpService._privateConstructor() {
     _dio = Dio()
       ..options = BaseOptions(
-        baseUrl: "https://www.wanandroid.com",
+        baseUrl: "https://www.wanandroid.com/",
         connectTimeout: 30000,
         receiveTimeout: 30000,
       )
@@ -52,11 +52,11 @@ class HttpService {
     if (response.statusCode == HttpStatus.ok) {
       var data = jsonDecode(response.toString());
       print(data);
-      var reponse = BaseBean.fromJson(data);
-      if (reponse.isSuccess) {
-        return fromJson(reponse.data);
+      var baseBean = BaseBean.fromJson(data);
+      if (baseBean.isSuccess) {
+        return fromJson(baseBean.data);
       } else {
-        throw reponse.errorMsg;
+        throw baseBean;
       }
     } else {
       throw Exception("http reponse error");
