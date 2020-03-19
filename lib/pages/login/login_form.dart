@@ -14,10 +14,10 @@ class LoginForm extends StatefulWidget {
 
 class LoginFormState extends State<LoginForm> {
   ///用户账号
-  TextEditingController _accoutController = TextEditingController();
+  final _accoutController = TextEditingController();
 
   ///用户密码
-  TextEditingController _pwdController = TextEditingController();
+  final _pwdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,37 +26,37 @@ class LoginFormState extends State<LoginForm> {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginFailure) {
-              Scaffold.of(context).removeCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    "${state.error}",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+              Scaffold.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "${state.error}",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                    backgroundColor: Colors.red,
                   ),
-                  backgroundColor: Colors.red,
-                ),
-              );
+                );
             } else if (state is LoginLoading) {
-              Scaffold.of(context).removeCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: Text(
-                        "登录中",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      )),
-                      CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                      )
-                    ],
+              Scaffold.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: Text(
+                          "登录中",
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        )),
+                        CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        )
+                      ],
+                    ),
+                    backgroundColor: Colors.blue,
                   ),
-                  backgroundColor: Colors.blue,
-                ),
-              );
-            }else if(state is ClearAccout){
-              _accoutController.clear();
+                );
             }
           },
           child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
@@ -70,58 +70,11 @@ class LoginFormState extends State<LoginForm> {
               children: <Widget>[
                 Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: <Widget>[
-                      TextField(
-                        controller: _accoutController,
-                        decoration: InputDecoration(
-                            labelText: "账号",
-                            prefixIcon: Icon(Icons.account_box),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.cyan),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey),
-                            )),
-                      ),
-                      IconButton(
-                          icon: Icon(Icons.highlight_off),
-                          color: Colors.grey,
-                          onPressed: () {
-                            //点击清除账号
-                            BlocProvider.of<LoginBloc>(context)
-                                .add(ClearAccoutPressed());
-                          })
-                    ],
-                  ),
+                  child: _AccoutField(accoutController: _accoutController),
                 ),
                 Container(
                   margin: EdgeInsets.all(20),
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: <Widget>[
-                      TextField(
-                        controller: _pwdController,
-                        decoration: InputDecoration(
-                            labelText: "密码",
-                            prefixIcon: Icon(Icons.lock),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.cyan),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey),
-                            )),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.visibility),
-                        color: Colors.grey,
-                        onPressed: () {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                        },
-                      )
-                    ],
-                  ),
+                  child: _PwdField(pwdController: _pwdController),
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
@@ -160,5 +113,100 @@ class LoginFormState extends State<LoginForm> {
             );
           }),
         ));
+  }
+}
+
+class _AccoutField extends StatefulWidget {
+  ///用户账号
+  final TextEditingController _accoutController;
+
+  _AccoutField({Key key, @required TextEditingController accoutController})
+      : _accoutController = accoutController,
+        super(key: key);
+
+  @override
+  _AccoutState createState() => _AccoutState();
+}
+
+class _AccoutState extends State<_AccoutField> {
+  @override
+  Widget build(BuildContext context) {
+    //清除输入的东西
+    final clearButClick = () {
+      setState(() {
+        widget._accoutController.clear();
+      });
+    };
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: <Widget>[
+        TextField(
+          controller: widget._accoutController,
+          decoration: InputDecoration(
+              labelText: "账号",
+              prefixIcon: Icon(Icons.account_box),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.cyan),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              )),
+        ),
+        IconButton(
+            icon: Icon(Icons.highlight_off),
+            color: Colors.grey,
+            onPressed: clearButClick)
+      ],
+    );
+  }
+}
+
+class _PwdField extends StatefulWidget {
+  ///用户账号
+  final TextEditingController _pwdController;
+
+  _PwdField({Key key, @required TextEditingController pwdController})
+      : _pwdController = pwdController,
+        super(key: key);
+
+  @override
+  _PwdState createState() => _PwdState();
+}
+
+class _PwdState extends State<_PwdField> {
+  var showPwd = true;
+
+  @override
+  Widget build(BuildContext context) {
+    //清楚输入的东西
+    final changPwdButClick = () {
+      setState(() {
+        showPwd = !showPwd;
+      });
+    };
+
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: <Widget>[
+        TextField(
+          controller: widget._pwdController,
+          obscureText: showPwd,
+          decoration: InputDecoration(
+              labelText: "密码",
+              prefixIcon: Icon(Icons.lock),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.cyan),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              )),
+        ),
+        IconButton(
+          icon: Icon(Icons.visibility),
+          color: Colors.grey,
+          onPressed: changPwdButClick,
+        )
+      ],
+    );
   }
 }

@@ -20,21 +20,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginButtonPressed) {
       yield LoginLoading();
-      try {
-        await loginRepository.login(event.username, event.password);
-        yield LoginInitial();
-      } on BaseBean catch (e) {
-        yield LoginFailure(error: e.errorMsg);
-      } catch (error) {
-        yield LoginFailure(error: error.toString());
-      }
-    } else if (event is ClearAccoutPressed) {
-      yield ClearAccout();
-    } else if (event is PasswordStatePressed) {
-      if (event.visiable) {
-        yield PasswordState.visiable();
+      if (event.username.isEmpty || event.password.isEmpty) {
+        yield LoginFailure(error: "账号或者密码为空");
       } else {
-        yield PasswordState.invisiable();
+        try {
+          await loginRepository.login(event.username, event.password);
+          yield LoginInitial();
+        } on BaseBean catch (e) {
+          yield LoginFailure(error: e.errorMsg);
+        } catch (error) {
+          yield LoginFailure(error: error.toString());
+        }
       }
     }
   }
