@@ -4,23 +4,23 @@ import 'package:wanandroid/pages/login/bloc/login_bloc.dart';
 import 'package:wanandroid/pages/login/bloc/login_state.dart';
 import 'package:wanandroid/pages/login/login_repository.dart';
 import 'package:wanandroid/pages/login/bloc/login_event.dart';
-import 'package:wanandroid/pages/register/register_form.dart';
-import 'package:wanandroid/pages/register/register_page.dart';
-import 'package:wanandroid/util/slide_right_route.dart';
 
-class LoginForm extends StatefulWidget {
-  LoginForm({Key key}) : super(key: key);
+class RegisterForm extends StatefulWidget {
+  RegisterForm({Key key}) : super(key: key);
 
   @override
-  LoginFormState createState() => LoginFormState();
+  RegisterFormState createState() => RegisterFormState();
 }
 
-class LoginFormState extends State<LoginForm> {
+class RegisterFormState extends State<RegisterForm> {
   ///用户账号
   final _accoutController = TextEditingController();
 
   ///用户密码
   final _pwdController = TextEditingController();
+
+  ///用户确认密码
+  final _rePwdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +80,10 @@ class LoginFormState extends State<LoginForm> {
                   child: _PwdField(pwdController: _pwdController),
                 ),
                 Container(
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  child: _PwdField(pwdController: _rePwdController),
+                ),
+                Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
                   height: 50,
                   width: double.infinity,
@@ -99,23 +103,6 @@ class LoginFormState extends State<LoginForm> {
                           _loginButPressed();
                         }
                       }),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10, left: 20),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              SlideRightRoute(
-                                  page: RegisterPage()));
-                        },
-                        child: Text(
-                          "没有账号，去注册",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        )),
-                  ),
                 )
               ],
             );

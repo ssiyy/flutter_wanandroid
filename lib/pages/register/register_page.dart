@@ -1,16 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wanandroid/pages/login/login_form.dart';
+import 'package:wanandroid/pages/register/register_form.dart';
 
 ///
 ///   账号：flutter_user
 ///   密码：flutter
-class UserLoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  UserLoginState createState() => UserLoginState();
+  RegisterState createState() => RegisterState();
 }
 
-class UserLoginState extends State<UserLoginPage>
+class RegisterState extends State<RegisterPage>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   /// 屏幕的尺寸
   Size _screenSize;
@@ -133,7 +134,7 @@ class UserLoginState extends State<UserLoginPage>
                           SlideTransition(
                             position: _logoSlidTween.animate(CurvedAnimation(
                                 parent: _logoController, curve: Curves.ease)),
-                            child: LoginForm(
+                            child: RegisterForm(
                                key: _contentBody,
                             )
                           )
