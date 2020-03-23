@@ -99,23 +99,6 @@ class LoginFormState extends State<LoginForm> {
                           _loginButPressed();
                         }
                       }),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10, left: 20),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              SlideRightRoute(
-                                  page: RegisterPage()));
-                        },
-                        child: Text(
-                          "没有账号，去注册",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        )),
-                  ),
                 )
               ],
             );

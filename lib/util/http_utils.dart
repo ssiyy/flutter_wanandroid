@@ -5,7 +5,6 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:wanandroid/data/base_bean.dart';
 
 class HttpService {
-
   HttpService._privateConstructor() {
     _dio = Dio()
       ..options = BaseOptions(
@@ -35,7 +34,7 @@ class HttpService {
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
   Future<T> get<T>(String url,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "GET"),
         params: params, fromJson: fromJson);
   }
@@ -49,7 +48,7 @@ class HttpService {
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
   Future<T> post<T>(String url,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "POST"),
         params: params, fromJson: fromJson);
   }
@@ -62,28 +61,35 @@ class HttpService {
   ///
   /// [params]网络请求的参数
   ///
-  /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
+  /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[_request]返回的类型
   Future<T> _request<T>(String url, Options options,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(BaseBean result)}) async {
     if (fromJson == null) {
-      fromJson = (value) {
-        return value as T;
+      fromJson = (result) {
+        return result as T;
       };
     }
-    var response =
-        await _dio.request(url, queryParameters: params, options: options);
-    if (response.statusCode == HttpStatus.ok) {
-      var data = jsonDecode(response.toString());
-      print(data);
-      var baseBean = BaseBean.fromJson(data);
-      if (baseBean.isSuccess) {
-        return fromJson(baseBean.data);
+    try {
+      var response =
+          await _dio.request(url, queryParameters: params, options: options);
+      if (response.statusCode == HttpStatus.ok) {
+        var data = jsonDecode(response.toString());
+
+        var baseBean = BaseBean.fromJson(data);
+        if (baseBean.isSuccess) {
+          return fromJson(baseBean);
+        } else {
+          throw baseBean;
+        }
       } else {
-        throw baseBean;
+        throw Exception("http reponse error");
       }
-    } else {
-      throw Exception("http reponse error");
+    } catch (e) {
+      //打印一下错误的消息
+      print(e.toString());
+      //允许调用继续获得这个错误
+      rethrow;
     }
   }
 }

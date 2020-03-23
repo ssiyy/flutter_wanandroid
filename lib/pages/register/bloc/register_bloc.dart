@@ -26,7 +26,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         try {
           await _registerRepository.register(
               event.username, event.password, event.rePassword);
-          yield RegisterInitial();
+          yield RegisterSuccess();
         } on BaseBean catch (e) {
           yield RegisterFailure(error: e.errorMsg);
         } catch (e) {

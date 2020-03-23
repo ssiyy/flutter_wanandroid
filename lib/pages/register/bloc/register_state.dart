@@ -10,6 +10,9 @@ class RegisterInitial extends RegisterState {}
 ///表示注册过程的状态 - 注册中
 class RegisterLoading extends RegisterState {}
 
+///表示注册过程的状态 - 注册成功
+class RegisterSuccess extends RegisterState {}
+
 ///表示登录过程的状态 - 登录失败
 class RegisterFailure extends RegisterState {
   final String error;

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wanandroid/pages/login/login_form.dart';
+import 'package:wanandroid/pages/register/register_page.dart';
+import 'package:wanandroid/util/slide_right_route.dart';
 
 ///
 ///   账号：flutter_user
@@ -131,12 +133,34 @@ class UserLoginState extends State<UserLoginPage>
                                     )),
                                   ))),
                           SlideTransition(
-                            position: _logoSlidTween.animate(CurvedAnimation(
-                                parent: _logoController, curve: Curves.ease)),
-                            child: LoginForm(
-                               key: _contentBody,
-                            )
-                          )
+                              position: _logoSlidTween.animate(CurvedAnimation(
+                                  parent: _logoController, curve: Curves.ease)),
+                              child: Column(
+                                key: _contentBody,
+                                children: <Widget>[
+                                  LoginForm(),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 10, left: 20,bottom: 10),
+                                    child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            FocusScope.of(context).requestFocus(FocusNode());
+                                            Navigator.push(
+                                                context,
+                                                SlideRightRoute(
+                                                    page: RegisterPage()));
+                                          },
+                                          child: Text(
+                                            "没有账号，去注册",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14),
+                                          )),
+                                    ),
+                                  )
+                                ],
+                              ))
                         ]))));
   }
 }

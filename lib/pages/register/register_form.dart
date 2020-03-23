@@ -59,6 +59,8 @@ class RegisterFormState extends State<RegisterForm> {
                     backgroundColor: Colors.blue,
                   ),
                 );
+            }else if(state is RegisterSuccess){
+              Navigator.pop(context);
             }
           },
           child: BlocBuilder<RegisterBloc, RegisterState>(
