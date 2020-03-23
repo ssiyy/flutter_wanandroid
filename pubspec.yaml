@@ -29,6 +29,7 @@ dependencies:
   pretty_dio_logger: ^1.1.1
   rxdart: ^0.23.1
   equatable: ^1.1.1
+  pull_to_refresh: ^1.5.8
 
 dev_dependencies:
   flutter_test:
