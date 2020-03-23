@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -33,8 +34,7 @@ class HttpService {
   ///
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
   Future<T> get<T>(String url,
-      {Map<String, dynamic> params,
-      T fromJson(BaseBean result)}) async {
+      {Map<String, dynamic> params, T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "GET"),
         params: params, fromJson: fromJson);
   }
@@ -47,8 +47,7 @@ class HttpService {
   ///
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
   Future<T> post<T>(String url,
-      {Map<String, dynamic> params,
-      T fromJson(BaseBean result)}) async {
+      {Map<String, dynamic> params, T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "POST"),
         params: params, fromJson: fromJson);
   }
@@ -63,8 +62,19 @@ class HttpService {
   ///
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[_request]返回的类型
   Future<T> _request<T>(String url, Options options,
-      {Map<String, dynamic> params,
-      T fromJson(BaseBean result)}) async {
+      {Map<String, dynamic> params, T fromJson(BaseBean result)}) async {
+    //获取一下path中的参数
+    final pathParams = _parsePathParameters(url);
+    for (var param in pathParams) {
+      final keys = params?.keys;
+      final isContain = keys?.contains(params);
+      if (isContain) {
+        url = _addPathParam(url, param, params[param]);
+      } else {
+        throw "path 的 $param 没有值";
+      }
+    }
+
     if (fromJson == null) {
       fromJson = (result) {
         return result as T;
@@ -91,5 +101,34 @@ class HttpService {
       //允许调用继续获得这个错误
       rethrow;
     }
+  }
+
+  //void _validatePathName()
+
+  static final _PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
+  static final _PARAM_URL_REGEX = RegExp("\\{(" + _PARAM + ")\\}");
+
+  /// 解析一下path中的参数,方法来自与Retrofit RequestFactory
+  Set<String> _parsePathParameters(String path) {
+    final matchers = _PARAM_URL_REGEX.allMatches(path);
+    Set<String> patterns = Set<String>();
+    matchers.forEach((element) {
+      patterns.add(element.group(1));
+    });
+    return patterns;
+  }
+
+  static final RegExp _PATH_TRAVERSAL =
+      RegExp("(.*/)?(\\.|%2e|%2E){1,2}(/.*)?");
+
+  /// 添加path中的参数,方法来自与Retrofit RequestBuilder
+  String _addPathParam(String relativeUrl, String name, String value) {
+    final newRelativeUrl = relativeUrl.replaceFirst("{" + name + "}", value);
+
+    if (_PARAM_URL_REGEX.hasMatch(newRelativeUrl)) {
+      throw "parameters shouldn't perform path traversal ('.' or '..'):$value";
+    }
+
+    return newRelativeUrl;
   }
 }
