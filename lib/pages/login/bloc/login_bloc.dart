@@ -7,11 +7,12 @@ import 'package:wanandroid/pages/login/bloc/login_state.dart';
 import 'package:wanandroid/pages/login/login_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final LoginRepository loginRepository;
+  final LoginRepository _loginRepository;
 
   LoginBloc({
-    @required this.loginRepository,
-  }) : assert(loginRepository != null);
+    @required LoginRepository loginRepository,
+  })  : assert(loginRepository != null),
+        this._loginRepository = loginRepository;
 
   @override
   LoginState get initialState => LoginInitial();
@@ -24,7 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginFailure(error: "账号或者密码为空");
       } else {
         try {
-          await loginRepository.login(event.username, event.password);
+          await _loginRepository.login(event.username, event.password);
           yield LoginInitial();
         } on BaseBean catch (e) {
           yield LoginFailure(error: e.errorMsg);

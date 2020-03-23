@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wanandroid/pages/login/bloc/login_bloc.dart';
-import 'package:wanandroid/pages/login/bloc/login_state.dart';
-import 'package:wanandroid/pages/login/login_repository.dart';
-import 'package:wanandroid/pages/login/bloc/login_event.dart';
+import 'package:wanandroid/pages/register/bloc/bloc.dart';
+import 'package:wanandroid/pages/register/register_repository.dart';
 
 class RegisterForm extends StatefulWidget {
   RegisterForm({Key key}) : super(key: key);
@@ -25,10 +23,11 @@ class RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => LoginBloc(loginRepository: LoginRepository()),
-        child: BlocListener<LoginBloc, LoginState>(
+        create: (context) =>
+            RegisterBloc(registerRepository: RegisterRepository()),
+        child: BlocListener<RegisterBloc, RegisterState>(
           listener: (context, state) {
-            if (state is LoginFailure) {
+            if (state is RegisterFailure) {
               Scaffold.of(context)
                 ..removeCurrentSnackBar()
                 ..showSnackBar(
@@ -40,7 +39,7 @@ class RegisterFormState extends State<RegisterForm> {
                     backgroundColor: Colors.red,
                   ),
                 );
-            } else if (state is LoginLoading) {
+            } else if (state is RegisterLoading) {
               Scaffold.of(context)
                 ..removeCurrentSnackBar()
                 ..showSnackBar(
@@ -49,7 +48,7 @@ class RegisterFormState extends State<RegisterForm> {
                       children: <Widget>[
                         Expanded(
                             child: Text(
-                          "登录中",
+                          "注册中",
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         )),
                         CircularProgressIndicator(
@@ -62,11 +61,13 @@ class RegisterFormState extends State<RegisterForm> {
                 );
             }
           },
-          child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-            final _loginButPressed = () {
-              BlocProvider.of<LoginBloc>(context).add(LoginButtonPressed(
+          child: BlocBuilder<RegisterBloc, RegisterState>(
+              builder: (context, state) {
+            final _registerButPressed = () {
+              BlocProvider.of<RegisterBloc>(context).add(RegisterButtonPressed(
                   username: _accoutController.text,
-                  password: _pwdController.text));
+                  password: _pwdController.text,
+                  rePassword: _rePwdController.text));
             };
 
             return Column(
@@ -77,11 +78,16 @@ class RegisterFormState extends State<RegisterForm> {
                 ),
                 Container(
                   margin: EdgeInsets.all(20),
-                  child: _PwdField(pwdController: _pwdController),
+                  child: _PwdField(
+                    pwdController: _pwdController,
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                  child: _PwdField(pwdController: _rePwdController),
+                  child: _PwdField(
+                    pwdController: _rePwdController,
+                    hintTxt: "确认密码",
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
@@ -94,13 +100,13 @@ class RegisterFormState extends State<RegisterForm> {
                               color: Color.fromARGB(225, 28, 90, 137))),
                       color: Color.fromARGB(225, 28, 90, 137),
                       child: Text(
-                        "登录",
+                        "注册",
                         style: TextStyle(color: Colors.white, fontSize: 22),
                       ),
                       onPressed: () {
                         FocusScope.of(context).requestFocus(new FocusNode());
-                        if (state is! LoginLoading) {
-                          _loginButPressed();
+                        if (state is! RegisterLoading) {
+                          _registerButPressed();
                         }
                       }),
                 )
@@ -160,8 +166,13 @@ class _PwdField extends StatefulWidget {
   ///用户账号
   final TextEditingController _pwdController;
 
-  _PwdField({Key key, @required TextEditingController pwdController})
+  ///文本提示文字
+  final String _hintTxt;
+
+  _PwdField(
+      {Key key, @required TextEditingController pwdController, String hintTxt})
       : _pwdController = pwdController,
+        _hintTxt = hintTxt,
         super(key: key);
 
   @override
@@ -173,7 +184,7 @@ class _PwdState extends State<_PwdField> {
 
   @override
   Widget build(BuildContext context) {
-    //清楚输入的东西
+    //清除输入的东西
     final changPwdButClick = () {
       setState(() {
         showPwd = !showPwd;
@@ -188,6 +199,7 @@ class _PwdState extends State<_PwdField> {
           obscureText: showPwd,
           decoration: InputDecoration(
               labelText: "密码",
+              hintText: widget._hintTxt,
               prefixIcon: Icon(Icons.lock),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.cyan),
