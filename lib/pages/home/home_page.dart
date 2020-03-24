@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanandroid/pages/home/home_repository.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -10,7 +11,12 @@ class HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Text("fdfdfdfdfd")
+      body: GestureDetector(
+        onTap: (){
+          HomeRepository().homeList(0);
+        },
+       child: Text("fdfdfdfdfd"),
+      )
     );
   }
 }
