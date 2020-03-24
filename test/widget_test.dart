@@ -16,7 +16,7 @@ void main() {
     expect(netWorkData, completion(equals(2)));
   });*/
 
-  test("test error", () async {
+  /*test("test error", () async {
     try {
       var error = await getNetData();
     } on String catch (e) {
@@ -25,7 +25,7 @@ void main() {
       print("类型：${e is String}");
       print(s);
     }
-  });
+  });*/
 
 /*  test("testing a future with expectAsync1 ", (){
     var netWorkData = getNetWorkData();
@@ -35,6 +35,28 @@ void main() {
       print("$error");
     }));
   });*/
+
+  test("testing a future with completion", () {
+    final h = Huby("d", "e", 2);
+
+    print(h.age is int);
+
+  });
+}
+
+class Huby extends Person {
+  final int age;
+
+  Huby(String firstName, String lastName, this.age)
+      : super(firstName, lastName, age.toString());
+}
+
+class Person {
+  final String firstName;
+  final String lastName;
+  final dynamic age;
+
+  Person(this.firstName, this.lastName, this.age);
 }
 
 Future<String> getNetData() {

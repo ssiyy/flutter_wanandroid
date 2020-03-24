@@ -6,6 +6,32 @@ part of 'home_bean.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+HomeListPage _$HomeListPageFromJson(Map<String, dynamic> json) {
+  return HomeListPage(
+    json['offset'] as int,
+    json['orver'] as bool,
+    json['pageCount'] as int,
+    json['size'] as int,
+    json['total'] as int,
+    json['curPage'] as int,
+    (json['datas'] as List)
+        ?.map((e) =>
+            e == null ? null : HomeList.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$HomeListPageToJson(HomeListPage instance) =>
+    <String, dynamic>{
+      'offset': instance.offset,
+      'orver': instance.orver,
+      'pageCount': instance.pageCount,
+      'size': instance.size,
+      'total': instance.total,
+      'curPage': instance.curPage,
+      'datas': instance.datas,
+    };
+
 HomeList _$HomeListFromJson(Map<String, dynamic> json) {
   return HomeList(
     json['apkLink'] as String,

@@ -1,6 +1,16 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wanandroid/data/base_bean.dart';
 
 part 'home_bean.g.dart';
+
+@JsonSerializable()
+class HomeListPage extends PageBean {
+  final List<HomeList> datas;
+
+  HomeListPage(int offset, bool orver, int pageCount, int size, int total,
+      int curPage, this.datas)
+      : super(offset, orver, pageCount, size, total, curPage, datas);
+}
 
 ///首页列表
 @JsonSerializable()
