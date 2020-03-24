@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wanandroid/data/base_bean.dart';
+import 'package:wanandroid/data/home_bean.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -11,20 +12,41 @@ abstract class HomeState extends Equatable {
 
 class HomeStateInitial extends HomeState {}
 
-class LoadBannerState extends HomeState {
-  final List<Banner> banners;
+class BannerLoadingState extends HomeState {}
+class HomeListLoadingState extends HomeState {}
 
-  LoadBannerState(this.banners);
+class LoadBannerFaileState extends HomeState {
+  final String error;
+
+  LoadBannerFaileState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class LoadHomeListFaileState extends HomeState {
+  final String error;
+
+  LoadHomeListFaileState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class LoadBannerSuccessState extends HomeState {
+  final List<HomeBanner> banners;
+
+  LoadBannerSuccessState(this.banners);
 
   @override
   List<Object> get props => [banners];
 }
 
-class LoadListState extends HomeState {
-  final PageBean pageBean;
+class LoadHomeListSuccessState extends HomeState {
+  final HomeListPage homeListPage;
 
-  LoadListState(this.pageBean);
+  LoadHomeListSuccessState(this.homeListPage);
 
   @override
-  List<Object> get props => [pageBean];
+  List<Object> get props => [homeListPage];
 }

@@ -4,10 +4,10 @@ import 'package:wanandroid/data/home_bean.dart';
 import 'package:wanandroid/util/http_utils.dart';
 
 class HomeRepository {
-  Future<PageBean> homeList(int page) {
+  Future<HomeListPage> homeList(int page) {
     return HttpService.instance.get(HOME_LIST, paths: {"page": page},
         fromJson: (baseBean) {
-      return PageBean.fromJson(baseBean.data);
+      return HomeListPage.fromJson(baseBean.data);
     });
   }
 

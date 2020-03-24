@@ -3,6 +3,7 @@ import 'package:wanandroid/data/base_bean.dart';
 
 part 'home_bean.g.dart';
 
+///首页列表
 @JsonSerializable()
 class HomeListPage extends PageBean {
   final List<HomeList> datas;
@@ -10,6 +11,11 @@ class HomeListPage extends PageBean {
   HomeListPage(int offset, bool orver, int pageCount, int size, int total,
       int curPage, this.datas)
       : super(offset, orver, pageCount, size, total, curPage, datas);
+
+  factory HomeListPage.fromJson(Map<String, dynamic> json) =>
+      _$HomeListPageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HomeListPageToJson(this);
 }
 
 ///首页列表

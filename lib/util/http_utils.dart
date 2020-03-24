@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:wanandroid/api/wanandroid_apis.dart';
 import 'package:wanandroid/data/base_bean.dart';
 
 class HttpService {
@@ -55,6 +56,8 @@ class HttpService {
   ///
   /// [params]网络请求的参数
   ///
+  /// [paths] [HOME_LIST]中"page"值在这里给出
+  ///
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[BaseBean]
   Future<T> post<T>(String url,
       {Map<String, dynamic> params,
@@ -71,6 +74,8 @@ class HttpService {
   /// [options] 网络请求的选项[Options]
   ///
   /// [params]网络请求的参数
+  ///
+  /// [paths] [HOME_LIST]中"page"值在这里给出
   ///
   /// [fromJson]对请求返回的结果进行转换，不传采用默认的实现，默认实现是转成[_request]返回的类型
   Future<T> _request<T>(String url, Options options,
@@ -125,7 +130,7 @@ class HttpService {
   ///
   ///[pathParams] [url]地址中通过[_parsePathParameters]解析获得的包含需要替换值 path 参数
   ///
-  ///[name] 替换path参数的名称
+  ///[paths] 替换path参数的名称
   void _validatePathParamsName(
       String url, String pathParams, Iterable<String> paths) {
     //验证一下
