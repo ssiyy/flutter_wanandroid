@@ -17,3 +17,5 @@ const String HOME_BANNER = "banner/json";
 ///首页列表
 ///GET
 const String HOME_LIST = "article/list/{page}/json";
+
+

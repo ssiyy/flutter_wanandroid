@@ -136,11 +136,11 @@ class HttpService {
 
   ///校验一下paths参数
   void _validatePathsName(Iterable<String> paths){
-    for(var path in paths){
+    paths?.forEach((path){
       if (!_PARAM_NAME_REGEX.hasMatch(path)) {
         throw '''paths parameter name must match ${_PARAM_URL_REGEX.pattern}. Found: "$path"''';
       }
-    }
+    });
   }
 
   /// 解析一下path中的参数,方法来自与Retrofit RequestFactory

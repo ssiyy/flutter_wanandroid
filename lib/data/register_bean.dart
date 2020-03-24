@@ -34,5 +34,5 @@ class Register {
   factory Register.fromJson(Map<String, dynamic> json) =>
       _$RegisterFromJson(json);
 
-  toJson(Map<String, dynamic> map) => _$RegisterToJson(this);
+  Map<String, dynamic> toJson() => _$RegisterToJson(this);
 }

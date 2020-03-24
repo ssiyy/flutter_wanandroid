@@ -22,3 +22,22 @@ class BaseBean {
 
   toJson(Map<String, dynamic> map) => _$BaseBeanToJson(this);
 }
+
+@JsonSerializable()
+class PageBean {
+  final int offset;
+  final bool orver;
+  final int pageCount;
+  final int size;
+  final int total;
+  final int curPage;
+  final List<dynamic> datas;
+
+  PageBean(this.offset, this.orver, this.pageCount, this.size, this.total,
+      this.curPage, this.datas);
+
+  factory PageBean.fromJson(Map<String, dynamic> json) =>
+      _$PageBeanFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PageBeanToJson(this);
+}

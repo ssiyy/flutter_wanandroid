@@ -12,8 +12,9 @@ class HomeState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onTap: (){
-          HomeRepository().homeList(0);
+        onTap: () async {
+         final fdfdf =  await HomeRepository().homeList(1);
+         print(fdfdf.curPage);
         },
        child: Text("fdfdfdfdfd"),
       )
