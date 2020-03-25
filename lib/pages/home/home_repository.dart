@@ -1,5 +1,4 @@
-import 'package:wanandroid/api/wanandroid_apis.dart';
-import 'package:wanandroid/data/base_bean.dart';
+import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/data/home_bean.dart';
 import 'package:wanandroid/util/http_utils.dart';
 

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:wanandroid/api/wanandroid_apis.dart';
+import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/data/base_bean.dart';
 
 class HttpService {

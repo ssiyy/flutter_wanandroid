@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wanandroid/data/base_bean.dart';
 import 'package:wanandroid/data/home_bean.dart';
+import 'package:wanandroid/http/http_status.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -12,41 +13,20 @@ abstract class HomeState extends Equatable {
 
 class HomeStateInitial extends HomeState {}
 
-class BannerLoadingState extends HomeState {}
-class HomeListLoadingState extends HomeState {}
+class HomeBannerRefreshState extends HomeState{
+  final Resource resource;
 
-class LoadBannerFaileState extends HomeState {
-  final String error;
-
-  LoadBannerFaileState(this.error);
+  HomeBannerRefreshState(this.resource);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [resource];
 }
 
-class LoadHomeListFaileState extends HomeState {
-  final String error;
+class HomeListRefreshState extends HomeState{
+  final Resource resource;
 
-  LoadHomeListFaileState(this.error);
-
-  @override
-  List<Object> get props => [error];
-}
-
-class LoadBannerSuccessState extends HomeState {
-  final List<HomeBanner> banners;
-
-  LoadBannerSuccessState(this.banners);
+  HomeListRefreshState(this.resource);
 
   @override
-  List<Object> get props => [banners];
-}
-
-class LoadHomeListSuccessState extends HomeState {
-  final HomeListPage homeListPage;
-
-  LoadHomeListSuccessState(this.homeListPage);
-
-  @override
-  List<Object> get props => [homeListPage];
+  List<Object> get props => [resource];
 }

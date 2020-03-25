@@ -1,5 +1,5 @@
 import 'package:wanandroid/data/register_bean.dart';
-import 'package:wanandroid/api/wanandroid_apis.dart';
+import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/util/http_utils.dart';
 
 class RegisterRepository {
