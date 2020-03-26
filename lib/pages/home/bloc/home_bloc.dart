@@ -20,17 +20,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is HomeRefreshEvent) {
-      //刷新首页列表
-        yield HomeListRefreshState(Resource.loading(null));
-        try {
-          final homeList = await _homeRepository.homeList(0);
-          yield HomeListRefreshState(Resource.success(homeList));
-        } on BaseBean catch (e) {
-          yield HomeListRefreshState(Resource.faile(null, e.errorMsg));
-        }catch(e){
-          yield HomeListRefreshState(Resource.faile(null, e.toString()));
-        }
-
         //刷新首页banner
         yield HomeBannerRefreshState(Resource.loading(null));
         try {
@@ -40,6 +29,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           yield HomeBannerRefreshState(Resource.faile(null, e.errorMsg));
         }catch(e){
           yield HomeBannerRefreshState(Resource.faile(null, e.toString()));
+        }
+
+        //刷新首页列表
+        yield HomeListRefreshState(Resource.loading(null));
+        try {
+          final homeList = await _homeRepository.homeList(0);
+          yield HomeListRefreshState(Resource.success(homeList));
+        } on BaseBean catch (e) {
+          yield HomeListRefreshState(Resource.faile(null, e.errorMsg));
+        }catch(e){
+          yield HomeListRefreshState(Resource.faile(null, e.toString()));
         }
 
     }

@@ -14,7 +14,7 @@ abstract class HomeState extends Equatable {
 class HomeStateInitial extends HomeState {}
 
 class HomeBannerRefreshState extends HomeState{
-  final Resource resource;
+  final Resource<List<HomeBanner>> resource;
 
   HomeBannerRefreshState(this.resource);
 
@@ -23,7 +23,7 @@ class HomeBannerRefreshState extends HomeState{
 }
 
 class HomeListRefreshState extends HomeState{
-  final Resource resource;
+  final Resource<HomeListPage> resource;
 
   HomeListRefreshState(this.resource);
 

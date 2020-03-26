@@ -45,7 +45,7 @@ class HomeList {
   final int shareDate;
   final String shareUser;
   final int superChapterId;
-  final int superChapterName;
+  final String superChapterName;
   final List<Tag> tags;
   final String title;
   final int type;

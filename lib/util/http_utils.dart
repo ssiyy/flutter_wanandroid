@@ -5,10 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/data/base_bean.dart';
+import 'package:wanandroid/main.dart';
 
 class HttpService {
   static final RegExp _PATH_TRAVERSAL =
-  RegExp("(.*/)?(\\.|%2e|%2E){1,2}(/.*)?");
+      RegExp("(.*/)?(\\.|%2e|%2E){1,2}(/.*)?");
 
   // 以字符大小写，数字，下划线和连字符开头。
   static final _PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
@@ -114,9 +115,9 @@ class HttpService {
       } else {
         throw Exception("http reponse error");
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       //打印一下错误的消息
-      print(e.toString());
+      logger.e(e.toString(), e, stackTrace);
       //允许调用继续获得这个错误
       rethrow;
     }
@@ -140,8 +141,8 @@ class HttpService {
   }
 
   ///校验一下paths参数
-  void _validatePathsName(Iterable<String> paths){
-    paths?.forEach((path){
+  void _validatePathsName(Iterable<String> paths) {
+    paths?.forEach((path) {
       if (!_PARAM_NAME_REGEX.hasMatch(path)) {
         throw '''paths parameter name must match ${_PARAM_URL_REGEX.pattern}. Found: "$path"''';
       }

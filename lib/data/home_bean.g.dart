@@ -58,7 +58,7 @@ HomeList _$HomeListFromJson(Map<String, dynamic> json) {
     json['shareDate'] as int,
     json['shareUser'] as String,
     json['superChapterId'] as int,
-    json['superChapterName'] as int,
+    json['superChapterName'] as String,
     (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
         ?.toList(),
