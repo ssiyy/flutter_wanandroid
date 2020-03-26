@@ -12,15 +12,17 @@ class HomePage extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
-class HomeState extends State<HomePage> {
+class HomeState extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         body: BlocProvider<HomeBloc>(
             create: (context) => HomeBloc(homeRepository: HomeRepository()),
             child:  HomeBody()));
   }
 
-
+  @override
+  bool get wantKeepAlive => true;
 }

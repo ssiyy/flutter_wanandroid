@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -25,10 +26,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _onRefresh() async {
     _homeBloc.add(HomeRefreshEvent());
-    // monitor network fetch
 
-    // if failed,use refreshFailed()
-    // _refreshController.refreshCompleted();
   }
 
   void _onLoading() async {
@@ -46,31 +44,22 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(buildWhen: (previous, current) {
-      final isBannerSuccess = current is HomeBannerRefreshState &&
+      return current is HomeRefreshState &&
           current.resource.status == Status.SUCCESS;
-      final isHomeListSuccess = current is HomeListRefreshState &&
-          current.resource.status == Status.SUCCESS;
-      return isBannerSuccess || isHomeListSuccess;
     }, builder: (context, state) {
       return SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: true,
-        header: WaterDropHeader(
-          complete: Text("刷新完成"),
-        ),
-        footer: _buildListFooter(),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        onLoading: _onLoading,
-        child:
-//        ListView(children: <Widget>[
-//            _buildBanner(state),
-            _buildList(state)
-//         ],
-//        )
-      );
+          enablePullDown: true,
+          enablePullUp: true,
+          header: WaterDropHeader(
+            complete: Text("刷新完成"),
+          ),
+          footer: _buildListFooter(),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          onLoading: _onLoading,
+          child: _buildContent(state));
     }, listener: (context, state) {
-      if (state is HomeListRefreshState) {
+      if (state is HomeRefreshState) {
         if (state.resource.status == Status.FAILE) {
           _refreshController.refreshFailed();
         } else if (state.resource.status == Status.SUCCESS) {
@@ -78,6 +67,24 @@ class _HomeBodyState extends State<HomeBody> {
         }
       }
     });
+  }
+
+  Widget _buildContent(HomeState state) {
+    if (state is HomeRefreshState) {
+      return CustomScrollView(
+        slivers: <Widget>[
+          // 如果不是Sliver家族的Widget，需要使用SliverToBoxAdapter做层包裹
+          SliverToBoxAdapter(
+            child: _buildBanner(state.resource.data.item1),
+          ),
+          SliverList(
+            delegate: _buildList(state.resource.data.item2),
+          )
+        ],
+      );
+    } else {
+      return null;
+    }
   }
 
   Widget _buildListFooter() {
@@ -108,87 +115,29 @@ class _HomeBodyState extends State<HomeBody> {
     });
   }
 
-  Widget _buildBanner(HomeState state) {
-
-    return
-      AspectRatio(
-        aspectRatio: 16/9,
-        child:  Swiper(
-          itemCount: 3,
+  Widget _buildBanner(List<HomeBanner> banners) {
+    return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Swiper(
+          itemCount: banners.length,
           duration: 5000,
           pagination: new SwiperPagination(),
           itemBuilder: (context, index) {
             return Image.network(
-              "http://via.placeholder.com/350x150",
+              banners[index].imagePath,
               fit: BoxFit.fill,
             );
           },
-        )
-      );
+        ));
+  }
 
-
-      Swiper(
-      itemCount: 3,
-      duration: 5000,
-      pagination: new SwiperPagination(),
-      control: new SwiperControl(),
-      itemBuilder: (context, index) {
-        return Image.network(
-          "http://via.placeholder.com/350x150",
-          fit: BoxFit.fill,
-        );
+  SliverChildBuilderDelegate _buildList(List<HomeList> items) {
+    return SliverChildBuilderDelegate(
+      (context, index) {
+        return _HomeListItemView(items[index]);
       },
+      childCount: items.length,
     );
-  /*  if (state is HomeBannerRefreshState) {
-      if (state.resource.status == Status.SUCCESS) {
-        final items = state.resource.data;
-        return Swiper(
-          itemWidth: 300.0,
-          itemHeight: 400.0,
-          itemCount: items.length,
-          duration: 5000,
-          pagination: new SwiperPagination(),
-          control: new SwiperControl(),
-          itemBuilder: (context, index) {
-            return Image.network(
-              "http://via.placeholder.com/350x150",
-              fit: BoxFit.fill,
-            );
-          },
-        );
-      }
-    }
-
-    return null;*/
-  }
-
-  Widget _buildList(HomeState state) {
-    if (state is HomeListRefreshState) {
-      if (state.resource.status == Status.SUCCESS) {
-        final items = state.resource.data.datas;
-        return ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return _HomeListItemView(items[index]);
-            });
-      }
-    }
-    return null;
-  }
-}
-
-class _HomeListView extends StatelessWidget {
-  final List<HomeList> items;
-
-  _HomeListView(this.items);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return _HomeListItemView(items[index]);
-        });
   }
 }
 
@@ -227,7 +176,9 @@ class _HomeListItemView extends StatelessWidget {
                   ),
                   strutStyle: StrutStyle(height: 1.5),
                 ),
-                Row(children: <Widget>[
+                Row(
+
+                    children: <Widget>[
                   Container(
                       child: Row(children: <Widget>[
                     Text(
@@ -251,18 +202,19 @@ class _HomeListItemView extends StatelessWidget {
                           style: TextStyle(fontSize: 12, color: Colors.black),
                         )
                       ])),
-                  Container(
+                  Expanded(child:Container(
                       margin: EdgeInsets.only(left: 10),
                       child: Row(children: <Widget>[
                         Text(
                           "时间：",
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
-                        Text(
+                        Expanded(child: Text(
                           item.niceDate,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12, color: Colors.black),
-                        )
-                      ])),
+                        ))
+                      ]))),
                 ])
               ],
             ),

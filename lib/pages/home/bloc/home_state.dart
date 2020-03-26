@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tuple/tuple.dart';
 import 'package:wanandroid/data/base_bean.dart';
 import 'package:wanandroid/data/home_bean.dart';
 import 'package:wanandroid/http/http_status.dart';
@@ -13,19 +14,10 @@ abstract class HomeState extends Equatable {
 
 class HomeStateInitial extends HomeState {}
 
-class HomeBannerRefreshState extends HomeState{
-  final Resource<List<HomeBanner>> resource;
+class HomeRefreshState extends HomeState{
+  final Resource<Tuple2<List<HomeBanner>,List<HomeList>>> resource;
 
-  HomeBannerRefreshState(this.resource);
-
-  @override
-  List<Object> get props => [resource];
-}
-
-class HomeListRefreshState extends HomeState{
-  final Resource<HomeListPage> resource;
-
-  HomeListRefreshState(this.resource);
+  HomeRefreshState(this.resource);
 
   @override
   List<Object> get props => [resource];

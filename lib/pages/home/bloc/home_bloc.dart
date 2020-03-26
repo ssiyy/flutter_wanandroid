@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tuple/tuple.dart';
 import 'package:wanandroid/data/base_bean.dart';
 import 'package:wanandroid/http/http_status.dart';
 import 'package:wanandroid/pages/home/bloc/bloc.dart';
@@ -20,27 +21,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is HomeRefreshEvent) {
-        //刷新首页banner
-        yield HomeBannerRefreshState(Resource.loading(null));
+        yield HomeRefreshState(Resource.loading(null));
         try {
+        //刷新首页banner
           final banners = await _homeRepository.homeBanner();
-          yield HomeBannerRefreshState(Resource.success(banners));
+        //刷新首页列表
+          final homeList = await _homeRepository.homeList(0);
+          yield HomeRefreshState(Resource.success(Tuple2(banners,homeList.datas)));
         } on BaseBean catch (e) {
-          yield HomeBannerRefreshState(Resource.faile(null, e.errorMsg));
+          yield HomeRefreshState(Resource.faile(null, e.errorMsg));
         }catch(e){
-          yield HomeBannerRefreshState(Resource.faile(null, e.toString()));
+          yield HomeRefreshState(Resource.faile(null, e.toString()));
         }
 
-        //刷新首页列表
-        yield HomeListRefreshState(Resource.loading(null));
-        try {
-          final homeList = await _homeRepository.homeList(0);
-          yield HomeListRefreshState(Resource.success(homeList));
-        } on BaseBean catch (e) {
-          yield HomeListRefreshState(Resource.faile(null, e.errorMsg));
-        }catch(e){
-          yield HomeListRefreshState(Resource.faile(null, e.toString()));
-        }
+
 
     }
   }

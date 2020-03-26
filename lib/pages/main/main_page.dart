@@ -23,6 +23,12 @@ class MainState extends State<MainPage> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -64,13 +70,13 @@ class MainState extends State<MainPage> with SingleTickerProviderStateMixin {
 
   Widget _tabView(BuildContext context) {
     return TabBarView(controller: _tabController, children: <Widget>[
-      HomePage(),
-      Container(
-        child: Text("fdfdfdf"),
-      ),
-      Container(
-        child: Text("fdfdfdf"),
-      ),
-    ]);
+          HomePage(),
+          Container(
+            child: Text("fdfdfdf"),
+          ),
+          Container(
+            child: Text("fdfdfdf"),
+          ),
+        ]);
   }
 }
