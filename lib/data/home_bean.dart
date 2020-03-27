@@ -1,7 +1,10 @@
+import 'package:jaguar_orm/jaguar_orm.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wanandroid/data/base_bean.dart';
 
 part 'home_bean.g.dart';
+
+part 'home_bean.jorm.dart';
 
 ///首页列表
 @JsonSerializable()
@@ -33,6 +36,7 @@ class HomeList {
   final String descMd;
   final String envelopePic;
   final bool fresh;
+  @PrimaryKey(name: "_id", isNullable: false)
   final int id;
   final String link;
   final String niceDate;
@@ -46,6 +50,7 @@ class HomeList {
   final String shareUser;
   final int superChapterId;
   final String superChapterName;
+  @HasMany(TagBean)
   final List<Tag> tags;
   final String title;
   final int type;
@@ -92,17 +97,45 @@ class HomeList {
   Map<String, dynamic> toJson() => _$HomeListToJson(this);
 }
 
+@GenBean()
+class HomeListBean extends Bean<HomeList> with _HomeListBean{
+  final TagBean tagBean;
+
+  HomeListBean(Adapter adapter)
+      : tagBean = TagBean(adapter),
+        super(adapter);
+}
+
 ///首页列表的tag
 @JsonSerializable()
 class Tag {
+  @PrimaryKey(auto: true)
+  int id;
+
   final String name;
   final String url;
+
+  @JsonKey(ignore: true)
+  @BelongsTo(HomeListBean,isNullable: false)
+  int homeId;
 
   Tag(this.name, this.url);
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
   Map<String, dynamic> toJson() => _$TagToJson(this);
+}
+
+@GenBean()
+class TagBean extends Bean<Tag> with _TagBean {
+  HomeListBean _homeListBean;
+
+  HomeListBean get homeListBean => _homeListBean??HomeListBean(adapter);
+
+  TagBean(Adapter adapter) : super(adapter);
+
+  @override
+  String get tableName => "tags";
 }
 
 ///首页的轮播图

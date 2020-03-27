@@ -108,10 +108,11 @@ Tag _$TagFromJson(Map<String, dynamic> json) {
   return Tag(
     json['name'] as String,
     json['url'] as String,
-  );
+  )..id = json['id'] as int;
 }
 
 Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'url': instance.url,
     };

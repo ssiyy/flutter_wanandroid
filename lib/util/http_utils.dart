@@ -34,6 +34,7 @@ class HttpService {
   Dio _dio;
 
   ///单例模式的一种写法，来自于：https://stackoverflow.com/questions/54057958/comparing-ways-to-create-singletons-in-dart
+  ///在所有其他条件相同的情况下，这种写法是最短的
   static final HttpService instance = HttpService._privateConstructor();
 
   /// 网络请求的get方法
