@@ -1,4 +1,6 @@
-///用来表示网络请求
+import 'dart:async';
+
+///用来表示资源请求
 enum Status {
   ///成功
   SUCCESS,
@@ -26,6 +28,7 @@ class Resource<T> {
   factory Resource.loading(T data) => Resource(Status.LOADING, data, null);
 }
 
+///分页资源请求状态
 enum PageStatus {
   ///请求中
   LOADING,
@@ -40,6 +43,7 @@ enum PageStatus {
   FAILE
 }
 
+///分页请求资源的通用类
 class PageRes<T> {
   final PageStatus status;
   final T data;
@@ -55,4 +59,18 @@ class PageRes<T> {
 
   factory PageRes.faile(T data, String msg) =>
       PageRes(PageStatus.FAILE, data, msg);
+}
+
+typedef EmptyFunc = void Function();
+
+///用来表示资源动作流和状态的集合
+class Listing<T> {
+  final Stream<T> list;
+  final EmptyFunc refresh;
+  final EmptyFunc loadData;
+  final Stream<PageRes> loadStatus;
+  final Stream<PageRes> refreshStatus;
+
+  Listing(this.list, this.refresh, this.loadData, this.loadStatus,
+      this.refreshStatus);
 }

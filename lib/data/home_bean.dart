@@ -1,15 +1,14 @@
 import 'package:jaguar_orm/jaguar_orm.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wanandroid/data/base_bean.dart';
+import 'package:wanandroid/db/bean/home_bean_db.dart';
 
 part 'home_bean.g.dart';
-
-part 'home_bean.jorm.dart';
 
 ///首页列表
 @JsonSerializable()
 class HomeListPage extends PageBean {
-  final List<HomeList> datas;
+  List<HomeList> datas;
 
   HomeListPage(int offset, bool orver, int pageCount, int size, int total,
       int curPage, this.datas)
@@ -24,41 +23,43 @@ class HomeListPage extends PageBean {
 ///首页列表
 @JsonSerializable()
 class HomeList {
-  final String apkLink;
-  final int audit;
-  final String author;
-  final bool canEdit;
-  final int chapterId;
-  final String chapterName;
-  final bool collect;
-  final int courseId;
-  final String desc;
-  final String descMd;
-  final String envelopePic;
-  final bool fresh;
-  @PrimaryKey(name: "_id", isNullable: false)
-  final int id;
-  final String link;
-  final String niceDate;
-  final String niceShareDate;
-  final String origin;
-  final String prefix;
-  final String projectLink;
-  final int publishTime;
-  final int selfVisible;
-  final int shareDate;
-  final String shareUser;
-  final int superChapterId;
-  final String superChapterName;
+  String apkLink;
+  int audit;
+  String author;
+  bool canEdit;
+  int chapterId;
+  String chapterName;
+  bool collect;
+  int courseId;
+  String desc;
+  String descMd;
+  String envelopePic;
+  bool fresh;
+  @PrimaryKey(isNullable: false)
+  int id;
+  String link;
+  String niceDate;
+  String niceShareDate;
+  String origin;
+  String prefix;
+  String projectLink;
+  int publishTime;
+  int selfVisible;
+  int shareDate;
+  String shareUser;
+  int superChapterId;
+  String superChapterName;
   @HasMany(TagBean)
-  final List<Tag> tags;
-  final String title;
-  final int type;
-  final int userId;
-  final int visible;
-  final int zan;
+  List<Tag> tags;
+  String title;
+  int type;
+  int userId;
+  int visible;
+  int zan;
 
-  HomeList(
+  HomeList();
+
+  HomeList.make(
       this.apkLink,
       this.audit,
       this.author,
@@ -97,58 +98,42 @@ class HomeList {
   Map<String, dynamic> toJson() => _$HomeListToJson(this);
 }
 
-@GenBean()
-class HomeListBean extends Bean<HomeList> with _HomeListBean{
-  final TagBean tagBean;
-
-  HomeListBean(Adapter adapter)
-      : tagBean = TagBean(adapter),
-        super(adapter);
-}
-
 ///首页列表的tag
 @JsonSerializable()
 class Tag {
+  String name;
+  String url;
+
+  ///提供给数据库用的
+  @JsonKey(ignore: true)
   @PrimaryKey(auto: true)
   int id;
 
-  final String name;
-  final String url;
-
+  ///提供给数据库用的，对应于[HomeList]的id
   @JsonKey(ignore: true)
-  @BelongsTo(HomeListBean,isNullable: false)
+  @BelongsTo(HomeListBean)
   int homeId;
 
-  Tag(this.name, this.url);
+  Tag();
+
+  Tag.make(this.name, this.url);
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
   Map<String, dynamic> toJson() => _$TagToJson(this);
 }
 
-@GenBean()
-class TagBean extends Bean<Tag> with _TagBean {
-  HomeListBean _homeListBean;
-
-  HomeListBean get homeListBean => _homeListBean??HomeListBean(adapter);
-
-  TagBean(Adapter adapter) : super(adapter);
-
-  @override
-  String get tableName => "tags";
-}
-
 ///首页的轮播图
 @JsonSerializable()
 class HomeBanner {
-  final String desc;
-  final int id;
-  final String imagePath;
-  final int isVisible;
-  final int order;
-  final String title;
-  final int type;
-  final String url;
+  String desc;
+  int id;
+  String imagePath;
+  int isVisible;
+  int order;
+  String title;
+  int type;
+  String url;
 
   HomeBanner(this.desc, this.id, this.imagePath, this.isVisible, this.order,
       this.title, this.type, this.url);

@@ -33,41 +33,40 @@ Map<String, dynamic> _$HomeListPageToJson(HomeListPage instance) =>
     };
 
 HomeList _$HomeListFromJson(Map<String, dynamic> json) {
-  return HomeList(
-    json['apkLink'] as String,
-    json['audit'] as int,
-    json['author'] as String,
-    json['canEdit'] as bool,
-    json['chapterId'] as int,
-    json['chapterName'] as String,
-    json['collect'] as bool,
-    json['courseId'] as int,
-    json['desc'] as String,
-    json['descMd'] as String,
-    json['envelopePic'] as String,
-    json['fresh'] as bool,
-    json['id'] as int,
-    json['link'] as String,
-    json['niceDate'] as String,
-    json['niceShareDate'] as String,
-    json['origin'] as String,
-    json['prefix'] as String,
-    json['projectLink'] as String,
-    json['publishTime'] as int,
-    json['selfVisible'] as int,
-    json['shareDate'] as int,
-    json['shareUser'] as String,
-    json['superChapterId'] as int,
-    json['superChapterName'] as String,
-    (json['tags'] as List)
+  return HomeList()
+    ..apkLink = json['apkLink'] as String
+    ..audit = json['audit'] as int
+    ..author = json['author'] as String
+    ..canEdit = json['canEdit'] as bool
+    ..chapterId = json['chapterId'] as int
+    ..chapterName = json['chapterName'] as String
+    ..collect = json['collect'] as bool
+    ..courseId = json['courseId'] as int
+    ..desc = json['desc'] as String
+    ..descMd = json['descMd'] as String
+    ..envelopePic = json['envelopePic'] as String
+    ..fresh = json['fresh'] as bool
+    ..id = json['id'] as int
+    ..link = json['link'] as String
+    ..niceDate = json['niceDate'] as String
+    ..niceShareDate = json['niceShareDate'] as String
+    ..origin = json['origin'] as String
+    ..prefix = json['prefix'] as String
+    ..projectLink = json['projectLink'] as String
+    ..publishTime = json['publishTime'] as int
+    ..selfVisible = json['selfVisible'] as int
+    ..shareDate = json['shareDate'] as int
+    ..shareUser = json['shareUser'] as String
+    ..superChapterId = json['superChapterId'] as int
+    ..superChapterName = json['superChapterName'] as String
+    ..tags = (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    json['title'] as String,
-    json['type'] as int,
-    json['userId'] as int,
-    json['visible'] as int,
-    json['zan'] as int,
-  );
+        ?.toList()
+    ..title = json['title'] as String
+    ..type = json['type'] as int
+    ..userId = json['userId'] as int
+    ..visible = json['visible'] as int
+    ..zan = json['zan'] as int;
 }
 
 Map<String, dynamic> _$HomeListToJson(HomeList instance) => <String, dynamic>{
@@ -105,14 +104,12 @@ Map<String, dynamic> _$HomeListToJson(HomeList instance) => <String, dynamic>{
     };
 
 Tag _$TagFromJson(Map<String, dynamic> json) {
-  return Tag(
-    json['name'] as String,
-    json['url'] as String,
-  )..id = json['id'] as int;
+  return Tag()
+    ..name = json['name'] as String
+    ..url = json['url'] as String;
 }
 
 Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
-      'id': instance.id,
       'name': instance.name,
       'url': instance.url,
     };

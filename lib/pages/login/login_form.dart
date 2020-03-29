@@ -4,9 +4,6 @@ import 'package:wanandroid/pages/login/bloc/login_bloc.dart';
 import 'package:wanandroid/pages/login/bloc/login_state.dart';
 import 'package:wanandroid/pages/login/login_repository.dart';
 import 'package:wanandroid/pages/login/bloc/login_event.dart';
-import 'package:wanandroid/pages/register/register_form.dart';
-import 'package:wanandroid/pages/register/register_page.dart';
-import 'package:wanandroid/util/slide_right_route.dart';
 
 class LoginForm extends StatefulWidget {
   LoginForm({Key key}) : super(key: key);
