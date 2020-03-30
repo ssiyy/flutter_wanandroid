@@ -69,7 +69,7 @@ class Listing<T> {
   final EmptyFunc refresh;
   final EmptyFunc loadData;
   final Stream<PageRes> loadStatus;
-  final Stream<PageRes> refreshStatus;
+  final Stream<Resource> refreshStatus;
 
   Listing(this.list, this.refresh, this.loadData, this.loadStatus,
       this.refreshStatus);

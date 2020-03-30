@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wanandroid/http/http_status.dart';
 import 'package:wanandroid/pages/register/bloc/bloc.dart';
 import 'package:wanandroid/pages/register/register_repository.dart';
 
@@ -25,46 +26,53 @@ class RegisterFormState extends State<RegisterForm> {
     return BlocProvider(
         create: (context) =>
             RegisterBloc(registerRepository: RegisterRepository()),
-        child: BlocListener<RegisterBloc, RegisterState>(
+        child: BlocConsumer<RegisterBloc, RegisterState>(
           listener: (context, state) {
-            if (state is RegisterFailure) {
-              Scaffold.of(context)
-                ..removeCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      "${state.error}",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-            } else if (state is RegisterLoading) {
-              Scaffold.of(context)
-                ..removeCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: <Widget>[
-                        Expanded(
-                            child: Text(
-                          "注册中",
+            if (state is RegisterBtnPressState) {
+              final resource = state.resource;
+              switch (resource.status) {
+                case Status.FAILE:
+                  Scaffold.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "${resource.message}",
                           style: TextStyle(color: Colors.white, fontSize: 14),
-                        )),
-                        CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        )
-                      ],
-                    ),
-                    backgroundColor: Colors.blue,
-                  ),
-                );
-            }else if(state is RegisterSuccess){
-              Navigator.pop(context);
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  break;
+                case Status.LOADING:
+                  Scaffold.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: <Widget>[
+                            Expanded(
+                                child: Text(
+                              "注册中",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            )),
+                            CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                            )
+                          ],
+                        ),
+                        backgroundColor: Colors.blue,
+                      ),
+                    );
+                  break;
+                case Status.SUCCESS:
+                  Navigator.pop(context);
+                  break;
+              }
             }
           },
-          child: BlocBuilder<RegisterBloc, RegisterState>(
-              builder: (context, state) {
+          builder: (context, state) {
             final _registerButPressed = () {
               BlocProvider.of<RegisterBloc>(context).add(RegisterButtonPressed(
                   username: _accoutController.text,
@@ -107,14 +115,15 @@ class RegisterFormState extends State<RegisterForm> {
                       ),
                       onPressed: () {
                         FocusScope.of(context).requestFocus(new FocusNode());
-                        if (state is! RegisterLoading) {
+                        if (!(state is RegisterBtnPressState &&
+                            state.resource.status == Status.LOADING)){
                           _registerButPressed();
                         }
                       }),
                 )
               ],
             );
-          }),
+          },
         ));
   }
 }

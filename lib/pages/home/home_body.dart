@@ -14,38 +14,40 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   RefreshController _refreshController =
-      RefreshController(initialRefresh: true);
+      RefreshController(initialRefresh: false);
 
   HomeBloc _homeBloc;
 
   @override
   void initState() {
     super.initState();
-    _homeBloc = BlocProvider.of<HomeBloc>(context);
+    _homeBloc = BlocProvider.of<HomeBloc>(context)
+      ..add(StartListEvent());
   }
 
   void _onRefresh() async {
-    _homeBloc.add(HomeRefreshEvent());
-
+    _homeBloc.add(RefreshListEvent());
   }
 
   void _onLoading() async {
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    // await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     /* items.add((items.length+1).toString());
     if(mounted)
       setState(() {
 
       });*/
-    _refreshController.loadComplete();
+    //_refreshController.loadComplete();
+
+    _homeBloc.add(LoadListEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeBloc, HomeState>(buildWhen: (previous, current) {
-      return current is HomeRefreshState &&
-          current.resource.status == Status.SUCCESS;
+    return BlocConsumer<HomeBloc, HomeState>(
+        buildWhen: (previous, current) {
+      return current is UpdateHomeListState;
     }, builder: (context, state) {
       return SmartRefresher(
           enablePullDown: true,
@@ -59,26 +61,34 @@ class _HomeBodyState extends State<HomeBody> {
           onLoading: _onLoading,
           child: _buildContent(state));
     }, listener: (context, state) {
-      if (state is HomeRefreshState) {
-        if (state.resource.status == Status.FAILE) {
+      if (state is HomeRefreshResState) {
+        if (state.res.status == Status.FAILE) {
           _refreshController.refreshFailed();
-        } else if (state.resource.status == Status.SUCCESS) {
+        } else if (state.res.status == Status.SUCCESS) {
           _refreshController.refreshCompleted();
+        }
+      } else if (state is HomeLoadResState) {
+        if (state.res.status == PageStatus.FAILE) {
+          _refreshController.loadFailed();
+        } else if (state.res.status == PageStatus.COMPLETE) {
+          _refreshController.loadComplete();
+        } else if (state.res.status == PageStatus.END) {
+          _refreshController.loadNoData();
         }
       }
     });
   }
 
   Widget _buildContent(HomeState state) {
-    if (state is HomeRefreshState) {
+    if (state is UpdateHomeListState) {
       return CustomScrollView(
         slivers: <Widget>[
           // 如果不是Sliver家族的Widget，需要使用SliverToBoxAdapter做层包裹
           SliverToBoxAdapter(
-            child: _buildBanner(state.resource.data.item1),
+            child: null//_buildBanner(state.resource.data.item1),
           ),
           SliverList(
-            delegate: _buildList(state.resource.data.item2),
+            delegate: _buildList(state.homeLists),
           )
         ],
       );
@@ -176,9 +186,7 @@ class _HomeListItemView extends StatelessWidget {
                   ),
                   strutStyle: StrutStyle(height: 1.5),
                 ),
-                Row(
-
-                    children: <Widget>[
+                Row(children: <Widget>[
                   Container(
                       child: Row(children: <Widget>[
                     Text(
@@ -202,19 +210,23 @@ class _HomeListItemView extends StatelessWidget {
                           style: TextStyle(fontSize: 12, color: Colors.black),
                         )
                       ])),
-                  Expanded(child:Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: Row(children: <Widget>[
-                        Text(
-                          "时间：",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        Expanded(child: Text(
-                          item.niceDate,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: Colors.black),
-                        ))
-                      ]))),
+                  Expanded(
+                      child: Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: Row(children: <Widget>[
+                            Text(
+                              "时间：",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                            Expanded(
+                                child: Text(
+                              item.niceDate,
+                              overflow: TextOverflow.ellipsis,
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.black),
+                            ))
+                          ]))),
                 ])
               ],
             ),

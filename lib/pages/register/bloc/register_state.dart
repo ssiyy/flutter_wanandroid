@@ -1,27 +1,22 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:wanandroid/http/http_status.dart';
 
-abstract class RegisterState{
+abstract class RegisterState extends Equatable{
   const RegisterState();
 }
 
 ///表示注册过程的状态 - 初始化
-class RegisterInitial extends RegisterState {}
-
-///表示注册过程的状态 - 注册中
-class RegisterLoading extends RegisterState {}
-
-///表示注册过程的状态 - 注册成功
-class RegisterSuccess extends RegisterState {}
-
-///表示登录过程的状态 - 登录失败
-class RegisterFailure extends RegisterState {
-  final String error;
-
-  const RegisterFailure({@required this.error});
-
+class RegisterInitial extends RegisterState {
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [];
+}
 
-  @override
-  String toString() => 'LoginFailure { error: $error }';
+
+class RegisterBtnPressState extends RegisterState {
+    final Resource resource;
+    const RegisterBtnPressState(this.resource);
+
+    @override
+    List<Object> get props => [resource];
 }

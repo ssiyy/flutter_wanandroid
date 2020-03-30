@@ -14,11 +14,37 @@ abstract class HomeState extends Equatable {
 
 class HomeStateInitial extends HomeState {}
 
-class HomeRefreshState extends HomeState{
-  final Resource<Tuple2<List<HomeBanner>,List<HomeList>>> resource;
+class UpdateHomeListState extends HomeState{
+  final List<HomeList> homeLists;
 
-  HomeRefreshState(this.resource);
+  UpdateHomeListState(this.homeLists);
 
   @override
-  List<Object> get props => [resource];
+  List<Object> get props => [homeLists];
 }
+
+
+class HomeRefreshResState extends HomeState {
+  final Resource res;
+
+  HomeRefreshResState(this.res);
+
+  @override
+  List<Object> get props => [res];
+}
+
+
+class HomeLoadResState extends HomeState {
+  final PageRes res;
+
+  HomeLoadResState(this.res);
+
+  @override
+  List<Object> get props => [res];
+}
+
+
+
+
+
+
