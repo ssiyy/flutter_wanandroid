@@ -62,7 +62,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _listSubscription =  listing.list.listen((value) => add(HomeListEvent(value)));
 
       _refreshSubscription?.cancel();
-      _refreshSubscription = listing.refreshStatus          .listen((value) => add(HomeRefreshResEvent(value)));
+      _refreshSubscription = listing.refreshStatus .listen((value) => add(HomeRefreshResEvent(value)));
 
       _loadSubscription?.cancel();
       _loadSubscription =  listing.loadStatus.listen((value) => add(HomeLoadResEvent(value)));

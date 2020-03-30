@@ -9,6 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rxdart/rxdart.dart';
 
 void main() {
   /* test("testing a future with completion", () {
@@ -36,12 +37,45 @@ void main() {
     }));
   });*/
 
-  test("testing a future with completion", () {
+  /*test("testing a future with completion", () {
     final h = Huby("d", "e", 2);
 
     print(h.age is int);
 
+  });*/
+
+  test("testing  RxDart", () {
+    final cl = f();
+    cl.s.listen((value){
+      print(value);
+    });
   });
+}
+
+
+L f(){
+  final pageChannel = BehaviorSubject<int>();
+
+  final cc =   pageChannel.map((value){
+    return "value is $value";
+  });
+
+  pageChannel.add(1);
+
+  /*cc.listen((value) {
+    print(value);
+  });*/
+
+
+  return L(cc);
+}
+
+class L{
+  Stream<String> s;
+
+  L(this.s);
+
+
 }
 
 class Huby extends Person {
