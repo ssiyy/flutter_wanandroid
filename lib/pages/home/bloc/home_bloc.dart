@@ -39,43 +39,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
-    if (event is HomeRefreshResEvent) {
-      /*   yield HomeRefreshState(Resource.loading(null));
-      try {
-        //刷新首页banner
-        final banners = await _homeRepository.homeBanner();
-        //刷新首页列表
-        final homeList = await _homeRepository.homeList(0);
-        yield HomeRefreshState(
-            Resource.success(Tuple2(banners, homeList.datas)));
-      } on BaseBean catch (e) {
-        yield HomeRefreshState(Resource.faile(null, e.errorMsg));
-      } catch (e) {
-        yield HomeRefreshState(Resource.faile(null, e.toString()));
-      }*/
-    }
-
     //外边事件
-    if (event is StartListEvent) {
-      final listing = _homeRepository.homeList();
-      _listSubscription?.cancel();
-      _listSubscription =  listing.list.listen((value) => add(HomeListEvent(value)));
+    try {
+      if (event is StartListEvent) {
+            final listing = _homeRepository.homeList();
+            _listSubscription?.cancel();
+            _listSubscription =  listing.list.listen((value){
+              print("dfdffffff");
+              add(HomeListEvent(value));});
 
-      _refreshSubscription?.cancel();
-      _refreshSubscription = listing.refreshStatus .listen((value) => add(HomeRefreshResEvent(value)));
+            _refreshSubscription?.cancel();
+            _refreshSubscription = listing.refreshStatus .listen((value) => add(HomeRefreshResEvent(value)));
 
-      _loadSubscription?.cancel();
-      _loadSubscription =  listing.loadStatus.listen((value) => add(HomeLoadResEvent(value)));
-      _refreshFunc = listing.refresh;
-      _loadFunc = listing.loadData;
-    } else if (event is RefreshListEvent) {
-      if (_refreshFunc != null) {
-        _refreshFunc();
-      }
-    }else if(event is LoadListEvent){
-      if(_loadFunc != null){
-        _loadFunc();
-      }
+            _loadSubscription?.cancel();
+            _loadSubscription =  listing.loadStatus.listen((value) => add(HomeLoadResEvent(value)));
+            _refreshFunc = listing.refresh;
+            _loadFunc = listing.loadData;
+          } else if (event is RefreshListEvent) {
+            if (_refreshFunc != null) {
+              _refreshFunc();
+            }
+          }else if(event is LoadListEvent){
+            if(_loadFunc != null){
+              _loadFunc();
+            }
+          }
+    } catch (e) {
+      print(e);
     }
 
     //内部事件

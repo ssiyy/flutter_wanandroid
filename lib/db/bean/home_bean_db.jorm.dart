@@ -732,3 +732,197 @@ abstract class _TagBean implements Bean<Tag> {
 
   HomeListBean get homeListBean;
 }
+
+abstract class _HomeBannerBean implements Bean<HomeBanner> {
+  final desc = StrField('desc');
+  final id = IntField('id');
+  final imagePath = StrField('image_path');
+  final isVisible = IntField('is_visible');
+  final order = IntField('banner_order');
+  final title = StrField('title');
+  final type = IntField('type');
+  final url = StrField('url');
+  Map<String, Field> _fields;
+  Map<String, Field> get fields => _fields ??= {
+        desc.name: desc,
+        id.name: id,
+        imagePath.name: imagePath,
+        isVisible.name: isVisible,
+        order.name: order,
+        title.name: title,
+        type.name: type,
+        url.name: url,
+      };
+  HomeBanner fromMap(Map map) {
+    HomeBanner model = HomeBanner();
+    model.desc = adapter.parseValue(map['desc']);
+    model.id = adapter.parseValue(map['id']);
+    model.imagePath = adapter.parseValue(map['image_path']);
+    model.isVisible = adapter.parseValue(map['is_visible']);
+    model.order = adapter.parseValue(map['banner_order']);
+    model.title = adapter.parseValue(map['title']);
+    model.type = adapter.parseValue(map['type']);
+    model.url = adapter.parseValue(map['url']);
+
+    return model;
+  }
+
+  List<SetColumn> toSetColumns(HomeBanner model,
+      {bool update = false, Set<String> only, bool onlyNonNull = false}) {
+    List<SetColumn> ret = [];
+
+    if (only == null && !onlyNonNull) {
+      ret.add(desc.set(model.desc));
+      ret.add(id.set(model.id));
+      ret.add(imagePath.set(model.imagePath));
+      ret.add(isVisible.set(model.isVisible));
+      ret.add(order.set(model.order));
+      ret.add(title.set(model.title));
+      ret.add(type.set(model.type));
+      ret.add(url.set(model.url));
+    } else if (only != null) {
+      if (only.contains(desc.name)) ret.add(desc.set(model.desc));
+      if (only.contains(id.name)) ret.add(id.set(model.id));
+      if (only.contains(imagePath.name))
+        ret.add(imagePath.set(model.imagePath));
+      if (only.contains(isVisible.name))
+        ret.add(isVisible.set(model.isVisible));
+      if (only.contains(order.name)) ret.add(order.set(model.order));
+      if (only.contains(title.name)) ret.add(title.set(model.title));
+      if (only.contains(type.name)) ret.add(type.set(model.type));
+      if (only.contains(url.name)) ret.add(url.set(model.url));
+    } else /* if (onlyNonNull) */ {
+      if (model.desc != null) {
+        ret.add(desc.set(model.desc));
+      }
+      if (model.id != null) {
+        ret.add(id.set(model.id));
+      }
+      if (model.imagePath != null) {
+        ret.add(imagePath.set(model.imagePath));
+      }
+      if (model.isVisible != null) {
+        ret.add(isVisible.set(model.isVisible));
+      }
+      if (model.order != null) {
+        ret.add(order.set(model.order));
+      }
+      if (model.title != null) {
+        ret.add(title.set(model.title));
+      }
+      if (model.type != null) {
+        ret.add(type.set(model.type));
+      }
+      if (model.url != null) {
+        ret.add(url.set(model.url));
+      }
+    }
+
+    return ret;
+  }
+
+  Future<void> createTable({bool ifNotExists = false}) async {
+    final st = Sql.create(tableName, ifNotExists: ifNotExists);
+    st.addStr(desc.name, isNullable: false);
+    st.addInt(id.name, primary: true, isNullable: false);
+    st.addStr(imagePath.name, isNullable: false);
+    st.addInt(isVisible.name, isNullable: false);
+    st.addInt(order.name, isNullable: false);
+    st.addStr(title.name, isNullable: false);
+    st.addInt(type.name, isNullable: false);
+    st.addStr(url.name, isNullable: false);
+    return adapter.createTable(st);
+  }
+
+  Future<dynamic> insert(HomeBanner model,
+      {bool cascade = false,
+      bool onlyNonNull = false,
+      Set<String> only}) async {
+    final Insert insert = inserter
+        .setMany(toSetColumns(model, only: only, onlyNonNull: onlyNonNull));
+    return adapter.insert(insert);
+  }
+
+  Future<void> insertMany(List<HomeBanner> models,
+      {bool onlyNonNull = false, Set<String> only}) async {
+    final List<List<SetColumn>> data = models
+        .map((model) =>
+            toSetColumns(model, only: only, onlyNonNull: onlyNonNull))
+        .toList();
+    final InsertMany insert = inserters.addAll(data);
+    await adapter.insertMany(insert);
+    return;
+  }
+
+  Future<dynamic> upsert(HomeBanner model,
+      {bool cascade = false,
+      Set<String> only,
+      bool onlyNonNull = false,
+      isForeignKeyEnabled = false}) async {
+    final Upsert upsert = upserter
+        .setMany(toSetColumns(model, only: only, onlyNonNull: onlyNonNull));
+    return adapter.upsert(upsert);
+  }
+
+  Future<void> upsertMany(List<HomeBanner> models,
+      {bool onlyNonNull = false,
+      Set<String> only,
+      isForeignKeyEnabled = false}) async {
+    final List<List<SetColumn>> data = [];
+    for (var i = 0; i < models.length; ++i) {
+      var model = models[i];
+      data.add(
+          toSetColumns(model, only: only, onlyNonNull: onlyNonNull).toList());
+    }
+    final UpsertMany upsert = upserters.addAll(data);
+    await adapter.upsertMany(upsert);
+    return;
+  }
+
+  Future<int> update(HomeBanner model,
+      {bool cascade = false,
+      bool associate = false,
+      Set<String> only,
+      bool onlyNonNull = false}) async {
+    final Update update = updater
+        .where(this.id.eq(model.id))
+        .setMany(toSetColumns(model, only: only, onlyNonNull: onlyNonNull));
+    return adapter.update(update);
+  }
+
+  Future<void> updateMany(List<HomeBanner> models,
+      {bool onlyNonNull = false, Set<String> only}) async {
+    final List<List<SetColumn>> data = [];
+    final List<Expression> where = [];
+    for (var i = 0; i < models.length; ++i) {
+      var model = models[i];
+      data.add(
+          toSetColumns(model, only: only, onlyNonNull: onlyNonNull).toList());
+      where.add(this.id.eq(model.id));
+    }
+    final UpdateMany update = updaters.addAll(data, where);
+    await adapter.updateMany(update);
+    return;
+  }
+
+  Future<HomeBanner> find(int id,
+      {bool preload = false, bool cascade = false}) async {
+    final Find find = finder.where(this.id.eq(id));
+    return await findOne(find);
+  }
+
+  Future<int> remove(int id) async {
+    final Remove remove = remover.where(this.id.eq(id));
+    return adapter.remove(remove);
+  }
+
+  Future<int> removeMany(List<HomeBanner> models) async {
+// Return if models is empty. If this is not done, all records will be removed!
+    if (models == null || models.isEmpty) return 0;
+    final Remove remove = remover;
+    for (final model in models) {
+      remove.or(this.id.eq(model.id));
+    }
+    return adapter.remove(remove);
+  }
+}

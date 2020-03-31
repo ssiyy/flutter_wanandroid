@@ -115,16 +115,15 @@ Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
     };
 
 HomeBanner _$HomeBannerFromJson(Map<String, dynamic> json) {
-  return HomeBanner(
-    json['desc'] as String,
-    json['id'] as int,
-    json['imagePath'] as String,
-    json['isVisible'] as int,
-    json['order'] as int,
-    json['title'] as String,
-    json['type'] as int,
-    json['url'] as String,
-  );
+  return HomeBanner()
+    ..desc = json['desc'] as String
+    ..id = json['id'] as int
+    ..imagePath = json['imagePath'] as String
+    ..isVisible = json['isVisible'] as int
+    ..order = json['order'] as int
+    ..title = json['title'] as String
+    ..type = json['type'] as int
+    ..url = json['url'] as String;
 }
 
 Map<String, dynamic> _$HomeBannerToJson(HomeBanner instance) =>

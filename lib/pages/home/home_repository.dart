@@ -1,4 +1,3 @@
-import 'package:jaguar_query_sqflite/jaguar_query_sqflite.dart';
 import 'package:wanandroid/db/bean/home_bean_db.dart';
 import 'package:wanandroid/db/database_helper.dart';
 import 'package:wanandroid/http/http_status.dart';
@@ -10,17 +9,19 @@ import 'package:wanandroid/util/http_utils.dart';
 class HomeRepository {
   final Future<HomeListBean> _homeListBean;
 
+  final Future<HomeBannerBean> _homeBannerBean;
+
   HomeRepository()
       : _homeListBean = DatabaseHelper.instance.createBean((adapter) {
-          return HomeListBean(adapter);
+          final bean = HomeListBean(adapter);
+          bean.tagBean.createTableHelper(ifNotExists: true);
+          return bean;
+        }),
+        _homeBannerBean = DatabaseHelper.instance.createBean((adapter) {
+          return HomeBannerBean(adapter);
         });
 
   Listing<List<HomeList>> homeList() {
-    /*return HttpService.instance.get(HOME_LIST, paths: {"page": page},
-        fromJson: (baseBean) {
-      return HomeListPage.fromJson(baseBean.data);
-    });*/
-
     return loadDataByPage(loadFromDb: () async* {
       final homeListBean = await _homeListBean;
       yield* Stream.fromFuture(homeListBean.getAll());
@@ -43,20 +44,30 @@ class HomeRepository {
         final tags = value.tags;
         final witdHomeIdTags = tags.map((tag) {
           tag.homeId = value.id;
+          return tag;
         }).toList();
 
         value.tags = witdHomeIdTags;
+        return value;
       }).toList();
 
-      await homeListBean.insertMany(lists);
+      await homeListBean.insertMany(lists, cascade: true);
     });
   }
 
-  Future<List<HomeBanner>> homeBanner() {
-    return HttpService.instance.get(HOME_BANNER, fromJson: (basebean) {
-      return (basebean.data as List).map((item) {
-        return HomeBanner.fromJson(item);
-      }).toList();
+  Stream<Resource<List<HomeBanner>>> homeBanner() {
+    return loadData(loadFromDb: () async* {
+      final homeBannerBean = await _homeBannerBean;
+      yield* Stream.fromFuture(homeBannerBean.getAll());
+    }, fetch: () {
+      return HttpService.instance.get(HOME_BANNER, fromJson: (basebean) {
+        return (basebean.data as List).map((item) {
+          return HomeBanner.fromJson(item);
+        }).toList();
+      });
+    }, saveCallResult: (value) async {
+      final homeBannerBean = await _homeBannerBean;
+      homeBannerBean.insertMany(value);
     });
   }
 }

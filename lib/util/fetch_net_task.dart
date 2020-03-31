@@ -65,34 +65,35 @@ Stream<Resource<DbResultType>> loadData<DbResultType>({
     onFetchFailed = (_) => null;
   }
   //默认参数初始化完成
-  final dbStream = loadFromDb();
+
   Stream<Resource<DbResultType>> doFetch() async* {
-    yield Resource.loading(await dbStream.first);
+    final first = await loadFromDb().firstWithDefault();
+    yield Resource.loading(first);
     try {
       final result = await fetch();
-      saveCallResult(result);
-      yield* dbStream.map((value) {
+      await saveCallResult(result);
+      yield* loadFromDb().map((value) {
         return Resource.success(value);
       });
     } on BaseBean catch (e) {
       if (onFetchFailed != null) {
         onFetchFailed(e);
       }
-      yield* dbStream.map((value) {
+      yield* loadFromDb().map((value) {
         return Resource.faile(value, e.errorMsg);
       });
     } catch (e) {
       if (onFetchFailed != null) {
         onFetchFailed(e);
       }
-      yield* dbStream.map((value) {
+      yield* loadFromDb().map((value) {
         return Resource.faile(value, e.toString());
       });
     }
   }
 
   yield Resource.loading(null);
-  final initialValue = await dbStream.first;
+  final initialValue = await loadFromDb().firstWithDefault();
   if (!shouldFetch(initialValue)) {
     yield* loadFromDb().map((value) {
       return Resource.success(value);
@@ -132,7 +133,6 @@ Listing<DbResultType> loadDataByPage<DbResultType, ReqNetParam>(
     @required Future<void> insertDb(DbResultType dbResultType, bool isRefresh),
     bool firstRefresh = true,
     int initPageIndex = 0}) {
-
   //当前请求的页面
   var page = initPageIndex;
   //当前什么操作，默认是刷新
@@ -163,8 +163,8 @@ Listing<DbResultType> loadDataByPage<DbResultType, ReqNetParam>(
   // ignore: close_sinks
   final pageChannel = BehaviorSubject<int>();
   final listFlow = pageChannel.map((pageIndex) {
-    createReqNetParamByPage(pageIndex);
-  }).flatMap((reqNetParam) {
+    return createReqNetParamByPage(pageIndex);
+  }).switchMap((reqNetParam) {
     return loadData(
         loadFromDb: loadFromDb,
         fetch: () => fetchNet(reqNetParam),
@@ -172,16 +172,15 @@ Listing<DbResultType> loadDataByPage<DbResultType, ReqNetParam>(
           performPage(dbResultType);
           insertDb(dbResultType, isRefresh);
         });
-  }).flatMap((value) async* {
-    Resource resource;
+  }).switchMap((value) async* {
+    Resource<DbResultType> resource;
     if (value.status == Status.LOADING && value.data == null) {
       //当loading的data为null时去数据找一下
-      final dbValue = await loadFromDb().first;
+      final dbValue = await loadFromDb().firstWithDefault();
       resource = Resource(value.status, dbValue, value.message);
     } else {
       resource = value;
     }
-
     yield resource;
   }).map((value) {
     switch (value.status) {
@@ -237,6 +236,6 @@ Listing<DbResultType> loadDataByPage<DbResultType, ReqNetParam>(
     refreshFunc();
   }
 
-  return Listing(
+  return Listing<DbResultType>(
       listFlow, refreshFunc, loadDataFunc, loadStatus, refreshStatus);
 }

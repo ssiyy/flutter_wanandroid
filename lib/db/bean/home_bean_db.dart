@@ -39,3 +39,16 @@ class TagBean extends Bean<Tag> with _TagBean, HelperBean {
     return createTable(ifNotExists: ifNotExists);
   }
 }
+
+@GenBean()
+class HomeBannerBean extends Bean<HomeBanner> with _HomeBannerBean, HelperBean {
+  @override
+  String get tableName => "home_banner";
+
+  HomeBannerBean(Adapter adapter):super(adapter);
+
+  @override
+  Future<void> createTableHelper({bool ifNotExists = false}) {
+    return createTable(ifNotExists: ifNotExists);
+  }
+}

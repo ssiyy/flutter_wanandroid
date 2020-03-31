@@ -60,7 +60,7 @@ L f(){
     return "value is $value";
   });
 
-  pageChannel.add(1);
+  pageChannel.sink.add(1);
 
   /*cc.listen((value) {
     print(value);

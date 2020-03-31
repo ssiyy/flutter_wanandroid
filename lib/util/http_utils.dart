@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/data/base_bean.dart';
-import 'package:wanandroid/main.dart';
 
 class HttpService {
   static final RegExp _PATH_TRAVERSAL =
@@ -118,7 +117,7 @@ class HttpService {
       }
     } catch (e, stackTrace) {
       //打印一下错误的消息
-      logger.e(e.toString(), e, stackTrace);
+      print(e);
       //允许调用继续获得这个错误
       rethrow;
     }

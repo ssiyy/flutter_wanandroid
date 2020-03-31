@@ -30,7 +30,6 @@ dependencies:
   rxdart: ^0.23.1
   equatable: ^1.1.1
   pull_to_refresh: ^1.5.8
-  logger: ^0.8.3
   flutter_swiper: ^1.1.6
   tuple: ^1.0.3
   jaguar_orm: ^2.2.7
