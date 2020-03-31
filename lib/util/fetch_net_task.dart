@@ -170,7 +170,7 @@ Listing<DbResultType> loadDataByPage<DbResultType, ReqNetParam>(
         fetch: () => fetchNet(reqNetParam),
         saveCallResult: (dbResultType) async {
           performPage(dbResultType);
-          insertDb(dbResultType, isRefresh);
+          return insertDb(dbResultType, isRefresh);
         });
   }).switchMap((value) async* {
     Resource<DbResultType> resource;

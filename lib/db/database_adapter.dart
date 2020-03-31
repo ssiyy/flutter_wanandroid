@@ -2,19 +2,53 @@ import 'package:jaguar_query_sqflite/composer.dart';
 import 'package:jaguar_query_sqflite/jaguar_query_sqflite.dart';
 import 'package:sqflite/sqflite.dart' as sqf;
 
-class DatabaseAdapter extends SqfliteAdapter{
+class DatabaseAdapter extends SqfliteAdapter {
   DatabaseAdapter(String path) : super(path);
-  DatabaseAdapter.fromConnection(sqf.Database connection) : super.fromConnection(connection);
+
+  DatabaseAdapter.fromConnection(sqf.Database connection)
+      : super.fromConnection(connection);
 
   /// 复写父类的方法，允许insert支持replace
-  Future<void> insertMany<T>(InsertMany st,{bool replaceIfExist = true}) {
-    String strSt= composeInsertMany(st,replaceIfExist);
+  Future<void> insertMany<T>(InsertMany st, {bool replaceIfExist = true}) {
+    String strSt = _composeInsertMany(st, replaceIfExist);
     return connection.execute(strSt);
+  }
+
+  /// 复写父类的方法，允许insert支持replace
+  Future<T> insert<T>(Insert st, {bool replaceIfExist = true}) async {
+    String strSt;
+    if (replaceIfExist) {
+      strSt = _composeInsert(st, true);
+    } else {
+      strSt = composeInsert(st);
+    }
+
+    return connection.rawInsert(strSt) as Future<T>;
   }
 }
 
+String _composeInsert(final Insert st, bool replaceIfExist) {
+  final ImmutableInsertStatement info = st.asImmutable;
+  final sb = new StringBuffer();
 
-String composeInsertMany(final InsertMany st,bool replaceIfExist) {
+  sb.write('INSERT');
+  if (replaceIfExist) {
+    sb.write(' OR REPLACE');
+  }
+  sb.write(' INTO ');
+  sb.write(info.table);
+  sb.write('(');
+
+  sb.write(info.values.keys.join(', '));
+
+  sb.write(') VALUES (');
+  sb.write(info.values.values.map(composeValue).join(', '));
+  sb.write(')');
+
+  return sb.toString();
+}
+
+String _composeInsertMany(final InsertMany st, bool replaceIfExist) {
   final ImmutableInsertManyStatement info = st.asImmutable;
   final sb = new StringBuffer();
 

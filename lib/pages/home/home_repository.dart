@@ -52,6 +52,7 @@ class HomeRepository {
       }).toList();
 
       await homeListBean.insertMany(lists, cascade: true);
+      return;
     });
   }
 
@@ -67,7 +68,8 @@ class HomeRepository {
       });
     }, saveCallResult: (value) async {
       final homeBannerBean = await _homeBannerBean;
-      homeBannerBean.insertMany(value);
+      await homeBannerBean.insertMany(value);
+      return;
     });
   }
 }
