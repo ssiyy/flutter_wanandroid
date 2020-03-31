@@ -42,28 +42,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     //外边事件
     try {
       if (event is StartListEvent) {
-            final listing = _homeRepository.homeList();
-            _listSubscription?.cancel();
-            _listSubscription =  listing.list.listen((value){
-              print("dfdffffff");
-              add(HomeListEvent(value));});
+        final listing = _homeRepository.homeList();
+        _listSubscription?.cancel();
+        _listSubscription =
+            listing.list.listen((value) => add(HomeListEvent(value)));
 
-            _refreshSubscription?.cancel();
-            _refreshSubscription = listing.refreshStatus .listen((value) => add(HomeRefreshResEvent(value)));
+        _refreshSubscription?.cancel();
+        _refreshSubscription = listing.refreshStatus
+            .listen((value) => add(HomeRefreshResEvent(value)));
 
-            _loadSubscription?.cancel();
-            _loadSubscription =  listing.loadStatus.listen((value) => add(HomeLoadResEvent(value)));
-            _refreshFunc = listing.refresh;
-            _loadFunc = listing.loadData;
-          } else if (event is RefreshListEvent) {
-            if (_refreshFunc != null) {
-              _refreshFunc();
-            }
-          }else if(event is LoadListEvent){
-            if(_loadFunc != null){
-              _loadFunc();
-            }
-          }
+        _loadSubscription?.cancel();
+        _loadSubscription =
+            listing.loadStatus.listen((value) => add(HomeLoadResEvent(value)));
+        _refreshFunc = listing.refresh;
+        _loadFunc = listing.loadData;
+      } else if (event is RefreshListEvent) {
+        if (_refreshFunc != null) {
+          _refreshFunc();
+        }
+      } else if (event is LoadListEvent) {
+        if (_loadFunc != null) {
+          _loadFunc();
+        }
+      }
     } catch (e) {
       print(e);
     }
