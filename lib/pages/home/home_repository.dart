@@ -24,7 +24,9 @@ class HomeRepository {
   Listing<List<HomeList>> homeList() {
     return loadDataByPage(loadFromDb: () async* {
       final homeListBean = await _homeListBean;
-      yield* Stream.fromFuture(homeListBean.getAll());
+      final lists = await homeListBean.getAll();
+      //这里需要做一下级联查询
+      yield* Stream.fromFuture(homeListBean.preloadAll(lists, cascade: true));
     }, createReqNetParamByPage: (pageIndex) {
       return pageIndex;
     }, fetchNet: (pageIndex) {
@@ -37,6 +39,8 @@ class HomeRepository {
       if (isRefresh) {
         //如果是刷新把之前的都删除
         await homeListBean.removeAll();
+        //关联的tag表也要删除
+        await homeListBean.tagBean.removeAll();
       }
 
       //不是刷新处理一下相关数据，主要是Tag那里的外键依赖
