@@ -24,6 +24,15 @@ class HomeListEvent extends HomeEvent {
   List<Object> get props => [homeLists];
 }
 
+class BannerListEvent extends HomeEvent{
+  final List<HomeBanner> homeBanners;
+
+  BannerListEvent(this.homeBanners);
+
+  @override
+  List<Object> get props => [homeBanners];
+}
+
 class HomeRefreshResEvent extends HomeEvent {
   final Resource res;
 

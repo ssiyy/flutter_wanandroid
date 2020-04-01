@@ -23,6 +23,16 @@ class UpdateHomeListState extends HomeState{
   List<Object> get props => [homeLists];
 }
 
+class BannerListState extends HomeState{
+  final List<HomeBanner> homeBanners;
+
+  BannerListState(this.homeBanners);
+
+
+  @override
+  List<Object> get props => [homeBanners];
+}
+
 
 class HomeRefreshResState extends HomeState {
   final Resource res;

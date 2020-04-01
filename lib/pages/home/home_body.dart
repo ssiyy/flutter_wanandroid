@@ -21,8 +21,7 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   void initState() {
     super.initState();
-    _homeBloc = BlocProvider.of<HomeBloc>(context)
-      ..add(StartListEvent());
+    _homeBloc = BlocProvider.of<HomeBloc>(context)..add(StartListEvent());
   }
 
   void _onRefresh() async {
@@ -45,8 +44,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeBloc, HomeState>(
-        buildWhen: (previous, current) {
+    return BlocConsumer<HomeBloc, HomeState>(buildWhen: (previous, current) {
       return current is UpdateHomeListState;
     }, builder: (context, state) {
       return SmartRefresher(
@@ -85,8 +83,12 @@ class _HomeBodyState extends State<HomeBody> {
         slivers: <Widget>[
           // 如果不是Sliver家族的Widget，需要使用SliverToBoxAdapter做层包裹
           SliverToBoxAdapter(
-            child: null//_buildBanner(state.resource.data.item1),
-          ),
+              child:
+                  BlocBuilder<HomeBloc, HomeState>(condition: (context, state) {
+            return state is BannerListState;
+          }, builder: (context, sate) {
+            return _buildBanner((sate as BannerListState).homeBanners);
+          })),
           SliverList(
             delegate: _buildList(state.homeLists),
           )
