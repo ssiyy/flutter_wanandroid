@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,16 +31,6 @@ class _HomeBodyState extends State<HomeBody> {
   }
 
   void _onLoading() async {
-    // monitor network fetch
-    // await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use loadFailed(),if no data return,use LoadNodata()
-    /* items.add((items.length+1).toString());
-    if(mounted)
-      setState(() {
-
-      });*/
-    //_refreshController.loadComplete();
-
     _homeBloc.add(LoadListEvent());
   }
 
@@ -50,9 +42,7 @@ class _HomeBodyState extends State<HomeBody> {
       return SmartRefresher(
           enablePullDown: true,
           enablePullUp: true,
-          header: WaterDropHeader(
-            complete: Text("刷新完成"),
-          ),
+          header: WaterDropHeader(complete: Text("刷新完成"), failed: Text("刷新失败")),
           footer: _buildListFooter(),
           controller: _refreshController,
           onRefresh: _onRefresh,
@@ -161,80 +151,120 @@ class _HomeListItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: <Widget>[
-          Container(
-            child: Image.asset(
-              "assets/images/like_normal.png",
-              width: 15,
-              height: 15,
-            ),
-            margin: EdgeInsets.only(right: 10),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Row(
               children: <Widget>[
-                Text(
-                  item.title,
-                  softWrap: true,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                  strutStyle: StrutStyle(height: 1.5),
+                Container(
+                  child: GestureDetector(
+                    onTap: (){
+
+                    },
+                      child: Image.asset(
+                    "assets/images/like_normal.png",
+                    width: 15,
+                    height: 15,
+                  )),
+                  margin: EdgeInsets.only(right: 10),
                 ),
-                Row(children: <Widget>[
-                  Container(
-                      child: Row(children: <Widget>[
-                    Text(
-                      "作者：",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    Text(
-                      item.author,
-                      style: TextStyle(fontSize: 12, color: Colors.black),
-                    )
-                  ])),
-                  Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: Row(children: <Widget>[
-                        Text(
-                          "分类：",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        item.title,
+                        softWrap: true,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
-                        Text(
-                          "${item.superChapterName}/${item.chapterName}",
-                          style: TextStyle(fontSize: 12, color: Colors.black),
-                        )
-                      ])),
-                  Expanded(
-                      child: Container(
-                          margin: EdgeInsets.only(left: 10),
-                          child: Row(children: <Widget>[
-                            Text(
-                              "时间：",
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
-                            Expanded(
-                                child: Text(
-                              item.niceDate,
-                              overflow: TextOverflow.ellipsis,
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
-                            ))
-                          ]))),
-                ])
+                        strutStyle: StrutStyle(height: 1.5),
+                      ),
+                      Row(children: <Widget>[
+                        Container(
+                            child: Row(children: <Widget>[
+                          Text(
+                            "作者：",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                          Text(
+                            item.author,
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          )
+                        ])),
+                        Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: Row(children: <Widget>[
+                              Text(
+                                "分类：",
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey),
+                              ),
+                              Text(
+                                "${item.superChapterName}/${item.chapterName}",
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black),
+                              )
+                            ])),
+                        Expanded(
+                            child: Container(
+                                margin: EdgeInsets.only(left: 10),
+                                child: Row(children: <Widget>[
+                                  Text(
+                                    "时间：",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  ),
+                                  Expanded(
+                                      child: Text(
+                                    item.niceDate,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.black),
+                                  ))
+                                ]))),
+                      ])
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      ),
-    );
+            Wrap(
+              direction: Axis.horizontal,
+              alignment: WrapAlignment.start,
+              children: <Widget>[for (Tag tag in item.tags) bindWrapItem(tag)],
+            )
+          ],
+        ));
   }
+
+  Widget bindWrapItem(Tag tag) {
+    return Container(
+        margin: EdgeInsets.only(left: 2, right: 2),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular((5))),
+            border:
+                Border.all(color: Colors.blueAccent.withAlpha(60), width: 1.0),
+            color: colors[Random().nextInt(colors.length)]),
+        child: Padding(
+          padding: EdgeInsets.only(left: 6, top: 4, right: 6, bottom: 4),
+          child: Text(
+            tag.name,
+            style: TextStyle(fontSize: 8, color: Colors.black),
+          ),
+        ));
+  }
+
+  final colors = [
+    Colors.green,
+    Colors.blue,
+    Colors.amber,
+    Colors.cyan,
+    Colors.deepOrange
+  ];
 }

@@ -1,7 +1,9 @@
-import 'dart:collection';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:wanandroid/http/http_urls.dart';
 import 'package:wanandroid/data/base_bean.dart';
@@ -15,10 +17,34 @@ class HttpService {
   static final _PARAM_URL_REGEX = RegExp("\\{(" + _PARAM + ")\\}");
   static final _PARAM_NAME_REGEX = RegExp(_PARAM);
 
+  static final String _BASE_URL = "https://www.wanandroid.com/";
+
+  ///持久化cookie
+  PersistCookieJar _cookieJar;
+
+  Dio _dio;
+
+  Future<PersistCookieJar> get cookieJar async {
+    if (_cookieJar != null) {
+      return _cookieJar;
+    }
+
+    _cookieJar = await _initCookieJar();
+    return _cookieJar;
+  }
+
+  Future<PersistCookieJar> _initCookieJar() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    return PersistCookieJar(dir: appDocPath + "/.cookies/");
+  }
+
   HttpService._privateConstructor() {
+    _cookieJar = PersistCookieJar();
+
     _dio = Dio()
       ..options = BaseOptions(
-        baseUrl: "https://www.wanandroid.com/",
+        baseUrl: _BASE_URL,
         connectTimeout: 30000,
         receiveTimeout: 30000,
       )
@@ -28,9 +54,17 @@ class HttpService {
           responseBody: true,
           responseHeader: true,
           compact: false));
+
+    setCookieManager();
   }
 
-  Dio _dio;
+  Future<void> setCookieManager()async{
+    final c = await cookieJar;
+    _dio.interceptors.add(CookieManager(c));
+    return;
+  }
+
+
 
   ///单例模式的一种写法，来自于：https://stackoverflow.com/questions/54057958/comparing-ways-to-create-singletons-in-dart
   ///在所有其他条件相同的情况下，这种写法是最短的
@@ -66,6 +100,13 @@ class HttpService {
       T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "POST"),
         params: params, paths: paths, fromJson: fromJson);
+  }
+
+  ///删除保存的cookie
+  Future<void> deleteCookie() async {
+    final c = await cookieJar;
+    c.delete(Uri.parse(_BASE_URL));
+    return;
   }
 
   /// 网络请求的方法

@@ -4,7 +4,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:jaguar_orm/jaguar_orm.dart';
 import 'package:wanandroid/db/database_adapter.dart';
-import 'package:wanandroid/main.dart';
 
 mixin HelperBean {
   Future<void> createTableHelper({bool ifNotExists = false});
@@ -21,9 +20,9 @@ class DatabaseHelper {
     return _instance;
   }
 
-  static Database _database;
+  Database _database;
 
-  static DatabaseAdapter _sqfliteAdapter;
+  DatabaseAdapter _sqfliteAdapter;
 
   final _dbName = "wanandroid.db";
 
@@ -32,11 +31,11 @@ class DatabaseHelper {
       return _database;
     }
 
-    _database = await initDatabase();
+    _database = await _initDatabase();
     return _database;
   }
 
-  Future<Database> initDatabase() async {
+  Future<Database> _initDatabase() async {
     //  /data/data/flutter.siy.wanandroid/databases/wanandroid.db
     final path = join(await getDatabasesPath(), _dbName);
     return await openDatabase(path, version: 1);

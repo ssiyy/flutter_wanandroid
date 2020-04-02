@@ -13,7 +13,10 @@ class ApplicationState extends  State<Application>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'WanAndroid',
+      title: "WanAndroid",
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: MainPage(),
     );
   }
