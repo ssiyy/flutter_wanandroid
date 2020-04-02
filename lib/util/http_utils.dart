@@ -58,10 +58,46 @@ class HttpService {
     setCookieManager();
   }
 
+  ///设置cookie管理
   Future<void> setCookieManager() async {
     final c = await cookieJar;
     _dio.interceptors.add(CookieManager(c));
     return;
+  }
+
+  ///删除保存的cookie
+  Future<void> deleteCookie() async {
+    final c = await cookieJar;
+    c.delete(Uri.parse(_BASE_URL));
+    return;
+  }
+
+  ///验证是否登录，或者登录是否有效
+  Future<bool> authentication() async {
+    final name = "loginUserName_wanandroid_com";
+    final pass = "token_pass_wanandroid_com";
+
+    final c = await cookieJar;
+    final cookies = c.loadForRequest(Uri.parse(_BASE_URL));
+
+    Cookie nameCookie;
+    Cookie passCookie;
+
+    for (Cookie cookie in cookies) {
+      if (cookie.name == name) {
+        nameCookie = cookie;
+      }
+      if (cookie.name == pass) {
+        passCookie = cookie;
+      }
+    }
+
+    final authNameCookie = (nameCookie?.value?.isNotEmpty ?? false) &&
+        DateTime.now().isBefore(nameCookie.expires);
+    final authPassCookie = (passCookie?.value?.isNotEmpty ?? false) &&
+        DateTime.now().isBefore(passCookie.expires);
+
+    return authNameCookie && authPassCookie;
   }
 
   ///单例模式的一种写法，来自于：https://stackoverflow.com/questions/54057958/comparing-ways-to-create-singletons-in-dart
@@ -98,13 +134,6 @@ class HttpService {
       T fromJson(BaseBean result)}) async {
     return _request(url, Options(method: "POST"),
         params: params, paths: paths, fromJson: fromJson);
-  }
-
-  ///删除保存的cookie
-  Future<void> deleteCookie() async {
-    final c = await cookieJar;
-    c.delete(Uri.parse(_BASE_URL));
-    return;
   }
 
   /// 网络请求的方法

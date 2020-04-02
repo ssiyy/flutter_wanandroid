@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wanandroid/pages/login/login_form.dart';
 import 'package:wanandroid/pages/register/register_page.dart';
+import 'package:wanandroid/util/http_utils.dart';
 import 'package:wanandroid/util/slide_right_route.dart';
 
 ///
@@ -145,11 +146,14 @@ class UserLoginState extends State<UserLoginPage>
                                       alignment: Alignment.topLeft,
                                       child: GestureDetector(
                                           onTap: () {
-                                            FocusScope.of(context).requestFocus(FocusNode());
+                                          /*  FocusScope.of(context).requestFocus(FocusNode());
                                             Navigator.push(
                                                 context,
                                                 SlideRightRoute(
-                                                    page: RegisterPage()));
+                                                    page: RegisterPage()));*/
+
+
+                                          HttpService.instance.authentication();
                                           },
                                           child: Text(
                                             "没有账号，去注册",
