@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wanandroid/bloc/authentication/bloc.dart';
+import 'package:wanandroid/pages/authentication/bloc/bloc.dart';
 import 'package:wanandroid/util/http_utils.dart';
 
 class AuthenticationBloc

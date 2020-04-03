@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wanandroid/bloc/authentication/bloc.dart';
-import 'package:wanandroid/util/transparent_route.dart';
+import 'package:wanandroid/pages/authentication/bloc/bloc.dart';
 
 class AuthenticationPage extends StatefulWidget {
   /// 验证用户是否登录
@@ -10,8 +9,11 @@ class AuthenticationPage extends StatefulWidget {
   ///
   /// false 没有
   static Future<bool> verification(BuildContext context) {
-    return Navigator.push<bool>(
-        context, TransparentRoute(builder: (context) => AuthenticationPage()));
+    return Navigator.of(context).push(PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return AuthenticationPage();
+        }));
   }
 
   @override
@@ -33,12 +35,19 @@ class AuthenticationPageState<AuthenticationPage> extends State {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state.isAuthenticated) {
-          Navigator.pop(context, true);
+          _redirectToPage(context, true);
         } else if (state.hasFailed) {
-          Navigator.pop(context, false);
+          _redirectToPage(context, false);
         }
         return Container();
       },
     );
+  }
+
+  /// 由于我们无法直接从构建器重定向到另一个页面，因此我们使用WidgetsBinding.instance.addPostFrameCallback（）方法在呈现完成后请求Flutter执行方法
+  void _redirectToPage(BuildContext context, bool result) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pop(context, result);
+    });
   }
 }

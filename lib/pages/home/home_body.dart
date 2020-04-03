@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:wanandroid/bloc/authentication/authentication_page.dart';
 import 'package:wanandroid/data/home_bean.dart';
 import 'package:wanandroid/http/http_status.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:wanandroid/pages/authentication/authentication_page.dart';
 import 'package:wanandroid/pages/home/bloc/bloc.dart';
 import 'package:wanandroid/pages/login/login_page.dart';
 
