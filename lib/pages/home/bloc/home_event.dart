@@ -51,4 +51,12 @@ class HomeLoadResEvent extends HomeEvent {
   List<Object> get props => [res];
 }
 
-class FavoriteEvent extends HomeEvent {}
+class FavoriteEvent extends HomeEvent {
+  final int id;
+  final bool isAdd;
+
+  FavoriteEvent(this.id, this.isAdd);
+
+  @override
+  List<Object> get props => [id,isAdd];
+}

@@ -1,3 +1,4 @@
+import 'package:wanandroid/data/base_bean.dart';
 import 'package:wanandroid/db/bean/home_bean_db.dart';
 import 'package:wanandroid/db/database_helper.dart';
 import 'package:wanandroid/http/http_status.dart';
@@ -21,6 +22,7 @@ class HomeRepository {
           return HomeBannerBean(adapter);
         });
 
+  ///首页列表
   Listing<List<HomeList>> homeList() {
     return loadDataByPage(loadFromDb: () async* {
       final homeListBean = await _homeListBean;
@@ -60,6 +62,7 @@ class HomeRepository {
     });
   }
 
+  ///Banner页面
   Stream<Resource<List<HomeBanner>>> homeBanner() {
     return loadData(loadFromDb: () async* {
       final homeBannerBean = await _homeBannerBean;
@@ -75,5 +78,14 @@ class HomeRepository {
       await homeBannerBean.insertMany(value);
       return;
     });
+  }
+
+  Future<BaseBean> favorite(int id, bool isAdd) {
+    if (isAdd) {
+      //收藏
+      return HttpService.instance.post(FAVORITE_IN, paths: {"id": id});
+    } else {
+      return HttpService.instance.post(FAVORITE_CANCEL, paths: {"id": id});
+    }
   }
 }

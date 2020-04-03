@@ -38,8 +38,36 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
+  /*  return  BlocListener(listener: (context, state) {
+      if (state is HomeRefreshResState) {
+        if (state.res.status == Status.FAILE) {
+          _refreshController.refreshFailed();
+        } else if (state.res.status == Status.SUCCESS) {
+          _refreshController.refreshCompleted();
+        }
+      } else if (state is HomeLoadResState) {
+        if (state.res.status == PageStatus.FAILE) {
+          _refreshController.loadFailed();
+        } else if (state.res.status == PageStatus.COMPLETE) {
+          _refreshController.loadComplete();
+        } else if (state.res.status == PageStatus.END) {
+          _refreshController.loadNoData();
+        }
+      }
+    },child:SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        header: WaterDropHeader(complete: Text("刷新完成"), failed: Text("刷新失败")),
+        footer: _buildListFooter(),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: _buildContent()) );*/
+
+
+
     return BlocConsumer<HomeBloc, HomeState>(buildWhen: (previous, current) {
-      return current is UpdateHomeListState;
+      return (current is UpdateHomeListState)  || (current is BannerListState);
     }, builder: (context, state) {
       return SmartRefresher(
           enablePullDown: true,
@@ -69,7 +97,29 @@ class _HomeBodyState extends State<HomeBody> {
     });
   }
 
-  Widget _buildContent(HomeState state) {
+/*  Widget _buildContent() {
+      return CustomScrollView(
+        slivers: <Widget>[
+          // 如果不是Sliver家族的Widget，需要使用SliverToBoxAdapter做层包裹
+          SliverToBoxAdapter(
+              child:
+              BlocBuilder<HomeBloc, HomeState>(condition: (context, state) {
+                return state is BannerListState;
+              }, builder: (context, sate) {
+                if (state is BannerListState) {
+                  return _buildBanner((sate as BannerListState).homeBanners);
+                } else {
+                  return Container();
+                }
+              })),
+          SliverList(
+            delegate: _buildList(state.homeLists),
+          )
+        ],
+      );
+  }*/
+
+    Widget _buildContent(HomeState state) {
     if (state is UpdateHomeListState) {
       return CustomScrollView(
         slivers: <Widget>[
@@ -77,9 +127,16 @@ class _HomeBodyState extends State<HomeBody> {
           SliverToBoxAdapter(
               child:
                   BlocBuilder<HomeBloc, HomeState>(condition: (context, state) {
+
+                    print("-----------------------------state:$state");
             return state is BannerListState;
-          }, builder: (context, sate) {
-            return _buildBanner((sate as BannerListState).homeBanners);
+          }, builder: (context, state) {
+                    print("-----------------------------context - state:$state");
+            if (state is BannerListState) {
+              return _buildBanner(state.homeBanners);
+            } else {
+              return Container();
+            }
           })),
           SliverList(
             delegate: _buildList(state.homeLists),
@@ -167,7 +224,7 @@ class _HomeListItemView extends StatelessWidget {
 
                         if (result) {
                           BlocProvider.of<HomeBloc>(context)
-                              .add(FavoriteEvent());
+                              .add(FavoriteEvent(item.id, !item.collect));
                         } else {
                           Navigator.push(
                               context,
@@ -175,10 +232,11 @@ class _HomeListItemView extends StatelessWidget {
                                   builder: (_) => UserLoginPage()));
                         }
                       },
-                      child: Image.asset(
-                        "assets/images/like_normal.png",
-                        width: 15,
-                        height: 15,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Icon(Icons.favorite,
+                            color: item.collect ? Colors.cyan : Colors.grey,
+                            size: 14),
                       )),
                   margin: EdgeInsets.only(right: 10),
                 ),

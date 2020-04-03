@@ -67,13 +67,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       updateHomeBanner();
     } else if (event is RefreshListEvent) {
-      if (_refreshFunc != null) {
-        _refreshFunc();
-      }
+      _refreshFunc?.call();
+      updateHomeBanner();
     } else if (event is LoadListEvent) {
-      if (_loadFunc != null) {
-        _loadFunc();
-      }
+      _loadFunc?.call();
+    } else if (event is FavoriteEvent) {
+      //收藏
+      final result = await _homeRepository.favorite(event.id, event.isAdd);
+      yield FavoriteState(result.isSuccess);
     }
 
     //内部事件

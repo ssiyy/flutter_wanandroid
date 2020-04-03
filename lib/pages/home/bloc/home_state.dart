@@ -54,6 +54,16 @@ class HomeLoadResState extends HomeState {
 }
 
 
+class FavoriteState extends HomeState {
+  final bool isSuccess;
+
+  FavoriteState(this.isSuccess);
+
+  @override
+  List<Object> get props => [isSuccess];
+}
+
+
 
 
 

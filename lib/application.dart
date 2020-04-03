@@ -18,7 +18,7 @@ class ApplicationState extends  State<Application>{
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: MainPage(),
     );
   }
 }
