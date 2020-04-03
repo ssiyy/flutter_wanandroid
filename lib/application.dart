@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanandroid/pages/home/home_page.dart';
 import 'package:wanandroid/pages/login/login_page.dart';
 import 'package:wanandroid/pages/main/main_page.dart';
 import 'package:wanandroid/pages/register/register_page.dart';
@@ -17,7 +18,7 @@ class ApplicationState extends  State<Application>{
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: UserLoginPage(),
+      home: HomePage(),
     );
   }
 }

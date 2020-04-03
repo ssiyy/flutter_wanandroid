@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:wanandroid/bloc/authentication/authentication_page.dart';
 import 'package:wanandroid/data/home_bean.dart';
 import 'package:wanandroid/http/http_status.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:wanandroid/pages/home/bloc/bloc.dart';
+import 'package:wanandroid/pages/login/login_page.dart';
 
 class HomeBody extends StatefulWidget {
   @override
@@ -159,14 +161,25 @@ class _HomeListItemView extends StatelessWidget {
               children: <Widget>[
                 Container(
                   child: GestureDetector(
-                    onTap: (){
+                      onTap: () async {
+                        final result =
+                            await AuthenticationPage.verification(context);
 
-                    },
+                        if (result) {
+                          BlocProvider.of<HomeBloc>(context)
+                              .add(FavoriteEvent());
+                        } else {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => UserLoginPage()));
+                        }
+                      },
                       child: Image.asset(
-                    "assets/images/like_normal.png",
-                    width: 15,
-                    height: 15,
-                  )),
+                        "assets/images/like_normal.png",
+                        width: 15,
+                        height: 15,
+                      )),
                   margin: EdgeInsets.only(right: 10),
                 ),
                 Expanded(

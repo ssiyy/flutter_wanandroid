@@ -146,14 +146,12 @@ class UserLoginState extends State<UserLoginPage>
                                       alignment: Alignment.topLeft,
                                       child: GestureDetector(
                                           onTap: () {
-                                          /*  FocusScope.of(context).requestFocus(FocusNode());
+                                            FocusScope.of(context).requestFocus(
+                                                FocusNode());
                                             Navigator.push(
                                                 context,
                                                 SlideRightRoute(
-                                                    page: RegisterPage()));*/
-
-
-                                          HttpService.instance.authentication();
+                                                    page: RegisterPage()));
                                           },
                                           child: Text(
                                             "没有账号，去注册",
