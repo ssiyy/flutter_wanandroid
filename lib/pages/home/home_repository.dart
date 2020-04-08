@@ -1,3 +1,4 @@
+import 'package:rxdart/rxdart.dart';
 import 'package:wanandroid/data/base_bean.dart';
 import 'package:wanandroid/db/bean/home_bean_db.dart';
 import 'package:wanandroid/db/database_helper.dart';
@@ -12,6 +13,9 @@ class HomeRepository {
 
   final Future<HomeBannerBean> _homeBannerBean;
 
+  ///用来通知更新
+  final notifyList = BehaviorSubject.seeded(1);
+
   HomeRepository()
       : _homeListBean = DatabaseHelper.instance.createBean((adapter) {
           final bean = HomeListBean(adapter);
@@ -25,10 +29,12 @@ class HomeRepository {
   ///首页列表
   Listing<List<HomeList>> homeList() {
     return loadDataByPage(loadFromDb: () async* {
-      final homeListBean = await _homeListBean;
-      final lists = await homeListBean.getAll();
-      //这里需要做一下级联查询
-      yield* Stream.fromFuture(homeListBean.preloadAll(lists, cascade: true));
+      yield* notifyList.switchMap((value) async* {
+        final homeListBean = await _homeListBean;
+        final lists = await homeListBean.getAll();
+        //这里需要做一下级联查询
+        yield* Stream.fromFuture(homeListBean.preloadAll(lists, cascade: true));
+      });
     }, createReqNetParamByPage: (pageIndex) {
       return pageIndex;
     }, fetchNet: (pageIndex) {
@@ -80,12 +86,41 @@ class HomeRepository {
     });
   }
 
-  Future<BaseBean> favorite(int id, bool isAdd) {
+  ///是否收藏
+  ///
+  ///[id]收藏的id
+  ///[isAdd]是否收藏
+  Future<BaseBean> favorite(int id, bool isAdd) async {
     if (isAdd) {
       //收藏
-      return HttpService.instance.post(FAVORITE_IN, paths: {"id": id});
+      BaseBean result =
+          await HttpService.instance.post(FAVORITE_IN, paths: {"id": id});
+
+      if (result.isSuccess) {
+        final homeListBean = await _homeListBean;
+
+        final item = await homeListBean.find(id);
+        item.collect = true;
+        await homeListBean.update(item);
+
+        //刷新列表
+        notifyList.add(1);
+      }
     } else {
-      return HttpService.instance.post(FAVORITE_CANCEL, paths: {"id": id});
+      //取消收藏
+      BaseBean result =
+          await HttpService.instance.post(FAVORITE_CANCEL, paths: {"id": id});
+
+      if (result.isSuccess) {
+        final homeListBean = await _homeListBean;
+
+        final item = await homeListBean.find(id);
+        item.collect = false;
+        await homeListBean.update(item);
+
+        //刷新列表
+        notifyList.add(1);
+      }
     }
   }
 }
