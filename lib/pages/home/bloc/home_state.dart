@@ -63,6 +63,10 @@ class FavoriteState extends HomeState {
   List<Object> get props => [isSuccess];
 }
 
+class FloatingChangeState extends HomeState {
+
+}
+
 
 
 

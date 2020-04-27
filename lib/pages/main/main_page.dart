@@ -33,6 +33,7 @@ class MainState extends State<MainPage> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text("wanandroid"),
+        //左上角icon
         leading: Icon(Icons.android),
         bottom: TabBar(
             controller: _tabController,

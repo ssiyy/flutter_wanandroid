@@ -22,10 +22,28 @@ class _HomeBodyState extends State<HomeBody> {
 
   HomeBloc _homeBloc;
 
+  bool _isShowFloatBtn = false;
+
   @override
   void initState() {
     super.initState();
     _homeBloc = BlocProvider.of<HomeBloc>(context)..add(StartListEvent());
+
+  /*  WidgetsBinding.instance.addPersistentFrameCallback((_) {
+      _refreshController.scrollController.addListener(() {
+        final offset = _refreshController.scrollController.offset;
+
+        if (offset < 480 && _isShowFloatBtn) {
+          _isShowFloatBtn = false;
+
+          BlocProvider.of<HomeBloc>(context).add(FloatingBtnChangeEvent());
+        } else if (offset > 480 && !_isShowFloatBtn) {
+          _isShowFloatBtn = true;
+
+          BlocProvider.of<HomeBloc>(context).add(FloatingBtnChangeEvent());
+        }
+      });
+    });*/
   }
 
   void _onRefresh() async {
@@ -34,6 +52,34 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _onLoading() async {
     _homeBloc.add(LoadListEvent());
+  }
+
+  Widget buildFloatingActionButton() {
+    return BlocBuilder<HomeBloc, HomeState>(condition: (context, state) {
+      return state is FloatingChangeState;
+    }, builder: (context, state) {
+      if (state is HomeStateInitial ||
+          _refreshController.scrollController == null ||
+          _refreshController.scrollController.offset < 480) {
+        return  FloatingActionButton(
+          backgroundColor: Colors.blue,
+          child: Icon(Icons.keyboard_arrow_up),
+          onPressed: () async {
+            _refreshController.scrollController.animateTo(0,
+                duration: Duration(milliseconds: 300), curve: Curves.linear);
+          },
+        );
+      }
+
+      return FloatingActionButton(
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.keyboard_arrow_up),
+        onPressed: () async {
+          _refreshController.scrollController.animateTo(0,
+              duration: Duration(milliseconds: 300), curve: Curves.linear);
+        },
+      );
+    });
   }
 
   @override
@@ -56,16 +102,18 @@ class _HomeBodyState extends State<HomeBody> {
             }
           }
         },
-        child: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: true,
-            header:
-                WaterDropHeader(complete: Text("刷新完成"), failed: Text("刷新失败")),
-            footer: _buildListFooter(),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            onLoading: _onLoading,
-            child: _buildContent()));
+        child: Scaffold(
+            body: SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: true,
+                header: WaterDropHeader(
+                    complete: Text("刷新完成"), failed: Text("刷新失败")),
+                footer: _buildListFooter(),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                onLoading: _onLoading,
+                child: _buildContent()),
+        ));
   }
 
   Widget _buildContent() {
@@ -85,25 +133,25 @@ class _HomeBodyState extends State<HomeBody> {
         })),
 
         BlocBuilder<HomeBloc, HomeState>(
-                condition: (context,state){
-                  return state is UpdateHomeListState;
-                },
-              builder: (context,state){
-                if(state is UpdateHomeListState){
-                  return SliverList(
-                    delegate: _buildList(state.homeLists),
-                  );
-                }else{
-                  return SliverList(
-                    delegate: _buildList([]),
-                  );
-                }
-
-              },
+          condition: (context, state) {
+            return state is UpdateHomeListState;
+          },
+          builder: (context, state) {
+            if (state is UpdateHomeListState) {
+              return SliverList(
+                delegate: _buildList(state.homeLists),
+              );
+            } else {
+              return SliverList(
+                delegate: _buildList([]),
+              );
+            }
+          },
         )
       ],
     );
   }
+
   Widget _buildListFooter() {
     return CustomFooter(builder: (context, mode) {
       Widget body;
@@ -166,108 +214,119 @@ class _HomeListItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  child: GestureDetector(
-                      onTap: () async {
-                        final result =
-                            await AuthenticationPage.verification(context);
+      padding: EdgeInsets.all(10),
+      child: GestureDetector(
+          //点击Item，这里要跳转到详情
+          onTap: () async {
+            print("-----------------------------");
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    child: GestureDetector(
+                        //收藏点击
+                        onTap: () async {
+                          final result =
+                              await AuthenticationPage.verification(context);
 
-                        if (result) {
-                          BlocProvider.of<HomeBloc>(context)
-                              .add(FavoriteEvent(item.id, !item.collect));
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => UserLoginPage()));
-                        }
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Icon(Icons.favorite,
-                            color: item.collect ? Colors.cyan : Colors.grey,
-                            size: 14),
-                      )),
-                  margin: EdgeInsets.only(right: 10),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        item.title,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                        strutStyle: StrutStyle(height: 1.5),
-                      ),
-                      Row(children: <Widget>[
-                        Container(
-                            child: Row(children: <Widget>[
-                          Text(
-                            "作者：",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          Text(
-                            item.author,
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          )
-                        ])),
-                        Container(
-                            margin: EdgeInsets.only(left: 10),
-                            child: Row(children: <Widget>[
-                              Text(
-                                "分类：",
-                                style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
-                              ),
-                              Text(
-                                "${item.superChapterName}/${item.chapterName}",
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black),
-                              )
-                            ])),
-                        Expanded(
-                            child: Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Row(children: <Widget>[
-                                  Text(
-                                    "时间：",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                  ),
-                                  Expanded(
-                                      child: Text(
-                                    item.niceDate,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  ))
-                                ]))),
-                      ])
-                    ],
+                          if (result) {
+                            BlocProvider.of<HomeBloc>(context)
+                                .add(FavoriteEvent(item.id, !item.collect));
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => UserLoginPage()));
+                          }
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Icon(Icons.favorite,
+                              color: item.collect ? Colors.cyan : Colors.grey,
+                              size: 14),
+                        )),
+                    margin: EdgeInsets.only(right: 10),
                   ),
-                )
-              ],
-            ),
-            Wrap(
-              direction: Axis.horizontal,
-              alignment: WrapAlignment.start,
-              children: <Widget>[for (Tag tag in item.tags) bindWrapItem(tag)],
-            )
-          ],
-        ));
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          item.title,
+                          softWrap: true,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          strutStyle: StrutStyle(height: 1.5),
+                        ),
+                        Row(children: <Widget>[
+                          Container(
+                              child: Row(children: <Widget>[
+                            Text(
+                              "作者：",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                            Text(
+                              item.author,
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.black),
+                            )
+                          ])),
+                          Container(
+                              margin: EdgeInsets.only(left: 10),
+                              child: Row(children: <Widget>[
+                                Text(
+                                  "分类：",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                ),
+                                Text(
+                                  "${item.superChapterName}/${item.chapterName}",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
+                                )
+                              ])),
+                          Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.only(left: 10),
+                                  child: Row(children: <Widget>[
+                                    Text(
+                                      "时间：",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                    Expanded(
+                                        child: Text(
+                                      item.niceDate,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.black),
+                                    ))
+                                  ]))),
+                        ])
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              Wrap(
+                direction: Axis.horizontal,
+                alignment: WrapAlignment.start,
+                children: <Widget>[
+                  for (Tag tag in item.tags) bindWrapItem(tag)
+                ],
+              )
+            ],
+          )),
+    );
   }
 
   Widget bindWrapItem(Tag tag) {

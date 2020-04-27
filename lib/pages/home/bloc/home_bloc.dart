@@ -75,6 +75,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //收藏
       final result = await _homeRepository.favorite(event.id, event.isAdd);
       yield FavoriteState(result.isSuccess);
+    }else if(event is FloatingBtnChangeEvent){
+      yield FloatingChangeState();
     }
 
     //内部事件

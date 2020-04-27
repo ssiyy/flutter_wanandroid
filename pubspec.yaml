@@ -36,7 +36,7 @@ dependencies:
   tuple: ^1.0.3
   jaguar_orm: ^2.2.7
   jaguar_query_sqflite: ^2.2.11
-  webview_flutter: ^0.3.19+9
+  webview_flutter: ^0.3.20+2
 
 dev_dependencies:
   flutter_test:
