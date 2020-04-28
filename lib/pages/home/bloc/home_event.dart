@@ -60,5 +60,3 @@ class FavoriteEvent extends HomeEvent {
   @override
   List<Object> get props => [id, isAdd];
 }
-
-class FloatingBtnChangeEvent extends HomeEvent {}
