@@ -22,28 +22,10 @@ class _HomeBodyState extends State<HomeBody> {
 
   HomeBloc _homeBloc;
 
-  bool _isShowFloatBtn = false;
-
   @override
   void initState() {
     super.initState();
     _homeBloc = BlocProvider.of<HomeBloc>(context)..add(StartListEvent());
-
-  /*  WidgetsBinding.instance.addPersistentFrameCallback((_) {
-      _refreshController.scrollController.addListener(() {
-        final offset = _refreshController.scrollController.offset;
-
-        if (offset < 480 && _isShowFloatBtn) {
-          _isShowFloatBtn = false;
-
-          BlocProvider.of<HomeBloc>(context).add(FloatingBtnChangeEvent());
-        } else if (offset > 480 && !_isShowFloatBtn) {
-          _isShowFloatBtn = true;
-
-          BlocProvider.of<HomeBloc>(context).add(FloatingBtnChangeEvent());
-        }
-      });
-    });*/
   }
 
   void _onRefresh() async {
@@ -52,34 +34,6 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _onLoading() async {
     _homeBloc.add(LoadListEvent());
-  }
-
-  Widget buildFloatingActionButton() {
-    return BlocBuilder<HomeBloc, HomeState>(condition: (context, state) {
-      return state is FloatingChangeState;
-    }, builder: (context, state) {
-      if (state is HomeStateInitial ||
-          _refreshController.scrollController == null ||
-          _refreshController.scrollController.offset < 480) {
-        return  FloatingActionButton(
-          backgroundColor: Colors.blue,
-          child: Icon(Icons.keyboard_arrow_up),
-          onPressed: () async {
-            _refreshController.scrollController.animateTo(0,
-                duration: Duration(milliseconds: 300), curve: Curves.linear);
-          },
-        );
-      }
-
-      return FloatingActionButton(
-        backgroundColor: Colors.blue,
-        child: Icon(Icons.keyboard_arrow_up),
-        onPressed: () async {
-          _refreshController.scrollController.animateTo(0,
-              duration: Duration(milliseconds: 300), curve: Curves.linear);
-        },
-      );
-    });
   }
 
   @override
@@ -113,11 +67,19 @@ class _HomeBodyState extends State<HomeBody> {
                 onRefresh: _onRefresh,
                 onLoading: _onLoading,
                 child: _buildContent()),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.blue,
+            child: Icon(Icons.keyboard_arrow_up),
+            onPressed: () async {
+              _refreshController.scrollController.animateTo(0,
+                  duration: Duration(milliseconds: 300), curve: Curves.linear);
+            },
+          ),
         ));
   }
 
   Widget _buildContent() {
-    return CustomScrollView(
+    return   CustomScrollView(
       slivers: <Widget>[
         // 如果不是Sliver家族的Widget，需要使用SliverToBoxAdapter做层包裹
         SliverToBoxAdapter(
