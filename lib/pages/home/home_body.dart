@@ -10,6 +10,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:wanandroid/pages/authentication/authentication_page.dart';
 import 'package:wanandroid/pages/home/bloc/bloc.dart';
 import 'package:wanandroid/pages/login/login_page.dart';
+import 'package:wanandroid/pages/webview/webview_page.dart';
 
 class HomeBody extends StatefulWidget {
   @override
@@ -180,7 +181,7 @@ class _HomeListItemView extends StatelessWidget {
       child: GestureDetector(
           //点击Item，这里要跳转到详情
           onTap: () async {
-            print("-----------------------------");
+            Navigator.push(context, MaterialPageRoute(builder: (_)=>WebViewPage(url:item.link,title: item.title,)));
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
