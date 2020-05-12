@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:wanandroid/util/utils_funcs.dart';
 
@@ -23,7 +24,7 @@ class WebViewPageState extends State<WebViewPage> {
        navigationBrowser(widget.url);
         break;
       case "share":
-
+        Share.share("${widget.title}:${widget.url}");
         break;
       default:
     }
